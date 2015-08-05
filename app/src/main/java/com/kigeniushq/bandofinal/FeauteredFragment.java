@@ -48,18 +48,26 @@ public class FeauteredFragment extends Fragment {
         usernamesArray = new ArrayList<String>();
         urlArray = new ArrayList<String>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Instagram");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoPost");
         query.addDescendingOrder("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     for (ParseObject po : objects) {
-                        linkArray.add(po.getString("postId"));
-                        photoArray.add(po.getString("imageUrl"));
-                        usernamesArray.add(po.getString("username"));
-                        captionsArray.add(po.getString("captionText"));
-                        urlArray.add(po.getString("link"));
-                        Log.v("benmark", "caption = " + String.valueOf(po.getString("captionText")));
+                        if(po.getString("siteType").contains("instagram")){
+                            linkArray.add(po.getString("postId"));
+                            photoArray.add(po.getString("imageUrl"));
+                            usernamesArray.add(po.getString("username"));
+                            captionsArray.add(po.getString("captionText"));
+                            urlArray.add(po.getString("link"));
+                            Log.v("benmark", "caption = " + String.valueOf(po.getString("captionText")));
+                        }else{
+                            linkArray.add(po.getString("imageUrl"));
+                            photoArray.add(po.getString("imageUrl"));
+                            usernamesArray.add(po.getString("username"));
+                            captionsArray.add(po.getString("postText"));
+                            urlArray.add(po.getString("postUrl"));
+                        }
                     }
                     CustomGrid adapter = new CustomGrid(getActivity(), photoArray, captionsArray);
                     grid = (GridView) getActivity().findViewById(R.id.grid);
