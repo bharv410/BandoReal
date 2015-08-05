@@ -12,7 +12,7 @@
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:id="@+id/grid"
-			android:horizontalSpacing="10dp"
-			android:verticalSpacing="10dp"
+			android:horizontalSpacing="2dp"
+			android:verticalSpacing="2dp"
 			/>
 	</RelativeLayout>

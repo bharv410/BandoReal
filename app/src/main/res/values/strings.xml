@@ -1,8 +1,8 @@
 <resources>
 	<string name="app_name">BandoFinal</string>
 
-	<string name="title_section1">Nearby</string>
-	<string name="title_section2">Featured</string>
+	<string name="title_section2">Nearby</string>
+	<string name="title_section1">Featured</string>
 	<string name="title_section3">Section 3</string>
 
 	<string name="hello_world">Hello world!</string>

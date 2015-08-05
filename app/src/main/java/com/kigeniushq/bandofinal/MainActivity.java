@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-        mViewPager.setCurrentItem(2);
+        //mViewPager.setCurrentItem(2);
     }
 
 
@@ -120,9 +120,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
-                    return new TweetsFragment();
                 case 1:
+                    return new TweetsFragment();
+                case 0:
                     return new FeauteredFragment();
                 default:
                     return new FeauteredFragment();
