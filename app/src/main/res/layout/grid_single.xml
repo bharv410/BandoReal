@@ -3,19 +3,18 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent">
 
-	<ImageView
+	<com.kigeniushq.bandofinal.SquareImageView
 		android:id="@+id/grid_image"
-		android:layout_width="75dp"
-		android:layout_height="75dp"
-		android:layout_margin="20dp"
-		android:layout_centerInParent="true">
-	</ImageView>
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scaleType="centerCrop">
+	</com.kigeniushq.bandofinal.SquareImageView>
 
 	<TextView
 		android:id="@+id/grid_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:textSize="9sp"
+		android:textSize="13sp"
 		android:textColor="#168807"
 		android:layout_alignParentRight="true"
 		android:layout_alignParentEnd="true"
