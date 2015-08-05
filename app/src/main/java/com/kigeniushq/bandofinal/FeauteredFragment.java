@@ -72,7 +72,7 @@ public class FeauteredFragment extends Fragment {
                         } else if (po.getString("siteType").contains("http://feeds.feedburner.com/realhotnewhiphop.xml")) {
                             setOgImage(po.getString("postLink"), position);
                             Log.v("benmark", "getting og image for " + String.valueOf(position));
-                            bp.setPostUrl(po.getString("postUrl"));
+                            bp.setPostUrl(po.getString("postLink"));
                             bp.setUsername(po.getString("username"));
                             bp.setPostText(po.getString("postText"));
                             bp.setPostType("article");
@@ -91,7 +91,7 @@ public class FeauteredFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getImageUrl())));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
                 } else {
