@@ -48,9 +48,8 @@ public class FeauteredFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoPost");
         query.addAscendingOrder("createdAt");
 
@@ -58,7 +57,7 @@ public class FeauteredFragment extends Fragment {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     bandoArray = new ArrayList<BandoPost>();
-int position =-1;
+                    int position = -1;
                     for (ParseObject po : objects) {
                         position++;
                         BandoPost bp = new BandoPost();
@@ -85,7 +84,6 @@ int position =-1;
                     grid = (GridViewWithHeaderAndFooter) getActivity().findViewById(R.id.grid);
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
-                    grid.addHeaderView(headerView);
                     setHeader(headerView);
                     grid.setAdapter(adapter);
                     grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -102,6 +100,12 @@ int position =-1;
             }
         });
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+    }
 
     private void setAdapterRightNow(){
 
@@ -109,6 +113,7 @@ int position =-1;
 
     private void setHeader(final View v){
 if(!featueredHedaerSet) {
+    grid.addHeaderView(v);
     ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
     query.addAscendingOrder("createdAt");
 
@@ -116,7 +121,10 @@ if(!featueredHedaerSet) {
         public void done(List<ParseObject> objects, ParseException e) {
             if (e == null) {
                 featueredHedaerSet = true;
-                Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl")).into((ImageView) v.findViewById(R.id.imageViewHeader));
+                Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl"))
+                        .placeholder(R.drawable.progress_animation)
+                        .into((ImageView) v.findViewById(R.id.imageViewHeader));
+
                 TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
                 featuredText.setTypeface(custom_font);
@@ -193,7 +201,9 @@ if(!featueredHedaerSet) {
                 ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);
                 textView.setText(bandoPosts.get(position).getPostText());
 
-                Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl()).into(imageView);
+                Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl())
+                        .placeholder(R.drawable.progress_animation )
+                        .into(imageView);
 
 
             } else {

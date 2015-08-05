@@ -5,6 +5,7 @@
 
 	<com.kigeniushq.bandofinal.SquareImageView
 		android:id="@+id/grid_image"
+		android:src="@drawable/progress_animation"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:scaleType="centerCrop">
