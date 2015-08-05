@@ -19,9 +19,10 @@
 		android:paddingRight="16dp"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:text="Medium Text !!"
-		android:textColor="#168807"
+		android:background="#CC168807"
+		android:textColor="#FFF"
 		android:maxLines="3"
 		android:id="@+id/featuredTextView"
-		android:layout_centerVertical="true"
+		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"/>
 </RelativeLayout>
