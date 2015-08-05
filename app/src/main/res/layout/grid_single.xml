@@ -7,6 +7,7 @@
 		android:id="@+id/grid_image"
 		android:layout_width="75dp"
 		android:layout_height="75dp"
+		android:layout_margin="20dp"
 		android:layout_centerInParent="true">
 	</ImageView>
 
@@ -15,9 +16,11 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textSize="9sp"
+		android:textColor="#168807"
 		android:layout_alignParentRight="true"
 		android:layout_alignParentEnd="true"
 		android:layout_below="@+id/grid_image"
+		android:layout_marginBottom="25dp"
 		android:gravity="center"
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentStart="true"
