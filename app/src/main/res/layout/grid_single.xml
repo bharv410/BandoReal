@@ -40,5 +40,15 @@
 		android:text="Caption Text Goes Here">
 	</TextView>
 
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text=""
+		android:textColor="#FFF"
+		android:background="#99168807"
+		android:id="@+id/socialTextView"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentTop="true"/>
+
 
 </RelativeLayout>

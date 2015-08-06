@@ -98,13 +98,12 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
                             //setOgImage(po.getString("postLink"), position);
                             Log.v("benmark", "getting og image for " + String.valueOf(position));
                             bp.setPostUrl(po.getString("postLink"));
-                            //bp.setUsername(po.getString("username"));
+                        bp.setPostSourceSite(po.getString("siteType"));
+
                             bp.setPostText(po.getString("postText"));
                             bp.setPostType("article");
                         bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
-
-                            Log.v("benmark", "hours dif  at " + Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
-                            bp.setImageUrl(po.getString("imageUrl"));
+                         bp.setImageUrl(po.getString("imageUrl"));
 
                             bandoArray.add(bp);
 
@@ -124,16 +123,6 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
-
-
-//                    grid.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//                        @Override
-//                        public void onScrollChanged() {
-//                            long millis = System.currentTimeMillis() % 1000;
-
-//                            }
-//                        }
-//                    });
                 } else {
                     Log.v("benmark", "code = " + String.valueOf(e.getCode()));
                 }
@@ -144,9 +133,6 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         if (mActionBar != null ) {
-
-            Log.v("benmark", "VerticalScrollOffset = " + String.valueOf(scrollY));
-            Log.v("benmark", "mActionBarHeight = " + String.valueOf(mActionBarHeight));
             if (scrollY >= mActionBarHeight && mActionBar.isShowing()) {
                 mActionBar.hide();
             } else if (scrollY == 0 && !mActionBar.isShowing()) {
@@ -154,7 +140,6 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
                 mActionBar.show();
             }
         }
-
     }
 
     @Override
@@ -309,6 +294,7 @@ if(!isFeaturedHeaderSet) {
                 //grid.setBackgroundColor(Color.parseColor("#999999"));
                 TextView textView = (TextView) grid.findViewById(R.id.grid_text);
                 TextView dateTextView = (TextView) grid.findViewById(R.id.textViewDate);
+                TextView socialTextView = (TextView) grid.findViewById(R.id.socialTextView);
                 dateTextView.setText(getItem(position).getDateString());
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
                 textView.setTypeface(custom_font);
@@ -328,6 +314,10 @@ if(!isFeaturedHeaderSet) {
 
                     }
                 });
+
+                final String siteType = getItem(position).getPostSourceSite();
+                if(!siteType.contains("article"))
+                    socialTextView.setText(siteType);
 
                 textView.setText(bandoPosts.get(position).getPostText());
 
@@ -401,21 +391,10 @@ if(!isFeaturedHeaderSet) {
                     String[] parts = result.split("\"og:image\"");
 
                     String partAfterOGImage = parts[1];
-                    //Log.v("benmark", "found partAfterOGImage " + partAfterOGImage);
                     String[] getRidOfTheEnd = partAfterOGImage.split("/><m");
 
                     String theLinkSHouldBe = getRidOfTheEnd[0].split("\"")[1];
-                    Log.v("benmark", "theLinkSHouldBe  " + theLinkSHouldBe);
                     Picasso.with(getActivity()).load(theLinkSHouldBe).into(imv);
-//                bandoArray.get(bandoindex).setImageUrl(theLinkSHouldBe);
-//                //CustomGrid newAadapter = new CustomGrid(getActivity(), bandoArray);
-//                adapter.getItem(bandoindex).setImageUrl(theLinkSHouldBe);
-//                if(bandoindex%3==0){
-//                    adapter.notifyDataSetChanged();
-//                    grid.invalidateViews();
-//                    grid.setAdapter(adapter);
-//                }
-                    //grid.smoothScrollToPosition();
                 }
             }
         }
