@@ -3,6 +3,8 @@ package classes;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
+
 /**
  * Created by benjamin.harvey on 8/5/15.
  */

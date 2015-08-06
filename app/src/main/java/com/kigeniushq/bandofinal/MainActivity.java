@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.astuetz.PagerSlidingTabStrip;
+
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
 
@@ -53,11 +55,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
 
+        // Bind the tabs to the ViewPager
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        //tabs.setViewPager(mViewPager);
+        //titleIndicator.set
+        tabs.setIndicatorColor(Color.WHITE);
+        tabs.setIndicatorHeight(4);
+//        tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                actionBar.setSelectedNavigationItem(position);
+//            }
+//        });
+
+
 
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);
+
             }
         });
 

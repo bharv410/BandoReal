@@ -4,10 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.GridView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
+
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class SquareGridView extends GridView{
+public class SquareGridView extends ObservableGridView{
     public SquareGridView(Context context){
         super(context);
     }

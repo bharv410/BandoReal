@@ -2,6 +2,7 @@ package com.kigeniushq.bandofinal;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.FeatureGroupInfo;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -22,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -41,14 +44,15 @@ import android.support.v7.app.ActionBar;
 import classes.BandoPost;
 import classes.CustomGridViewWithHeader;
 import in.srain.cube.views.GridViewWithHeaderAndFooter;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class FeauteredFragment extends Fragment implements ViewTreeObserver.OnScrollChangedListener{
+public class FeauteredFragment extends Fragment  implements ObservableScrollViewCallbacks {
 
     ArrayList<BandoPost> bandoArray;
-    CustomGridViewWithHeader grid;
+    MyObservableGridView grid;
     CustomGrid adapter;
 
     private float mActionBarHeight;
@@ -69,16 +73,16 @@ public class FeauteredFragment extends Fragment implements ViewTreeObserver.OnSc
         TypedValue tv = new TypedValue();
         if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics())
+            / 3;
         }
         mstyled.recycle();
-        ((CustomGridViewWithHeader)getActivity().findViewById(R.id.grid)).getViewTreeObserver().addOnScrollChangedListener(this);
 
         getHotNewHipHop();
     }
 
     private void getHotNewHipHop(){
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoPost");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addAscendingOrder("createdAt");
         query.setLimit(12);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -89,45 +93,43 @@ public class FeauteredFragment extends Fragment implements ViewTreeObserver.OnSc
                     for (ParseObject po : objects) {
                         position++;
                         BandoPost bp = new BandoPost();
-                        if (po.getString("siteType").contains("http://feeds.feedburner.com/realhotnewhiphop.xml")) {
                             //setOgImage(po.getString("postLink"), position);
                             Log.v("benmark", "getting og image for " + String.valueOf(position));
                             bp.setPostUrl(po.getString("postLink"));
-                            bp.setUsername(po.getString("username"));
+                            //bp.setUsername(po.getString("username"));
                             bp.setPostText(po.getString("postText"));
                             bp.setPostType("article");
-                            bp.setImageUrl("og:image");
-                        }
-                        bandoArray.add(bp);
+
+                            bp.setImageUrl(po.getString("imageUrl"));
+
+                            bandoArray.add(bp);
+
                     }
                     adapter = new CustomGrid(getActivity(), bandoArray);
 
-                    grid = (CustomGridViewWithHeader) getActivity().findViewById(R.id.grid);
+                    grid = (MyObservableGridView) getActivity().findViewById(R.id.grid);
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
                     setHeader(headerView);
                     grid.setAdapter(adapter);
+                    grid.setScrollViewCallbacks(FeauteredFragment.this);
                     grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
-                    grid.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                        @Override
-                        public void onScrollChanged() {
-                            if (mActionBar != null) {
-                                float y = ((CustomGridViewWithHeader) getActivity().findViewById(R.id.grid)).computeVerticalScrollOffset();
-                                if (y >= mActionBarHeight && mActionBar.isShowing()) {
-                                    mActionBar.hide();
-                                } else if (y == 0 && !mActionBar.isShowing()) {
-                                    mActionBar.show();
-                                }
-                            }
-                        }
-                    });
+
+
+//                    grid.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+//                        @Override
+//                        public void onScrollChanged() {
+//                            long millis = System.currentTimeMillis() % 1000;
+
+//                            }
+//                        }
+//                    });
                 } else {
                     Log.v("benmark", "code = " + String.valueOf(e.getCode()));
                 }
@@ -136,14 +138,38 @@ public class FeauteredFragment extends Fragment implements ViewTreeObserver.OnSc
     }
 
     @Override
-    public void onScrollChanged() {
-        float mfloat = ((CustomGridViewWithHeader)getActivity().findViewById(R.id.grid)).getScrollY();
-        if (mfloat >= mActionBarHeight && mActionBar.isShowing()) {
-            mActionBar.hide();
-        } else if ( mfloat==0
-                &&
-                !mActionBar.isShowing()) {
-            mActionBar.show();
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+        if (mActionBar != null ) {
+
+            Log.v("benmark", "VerticalScrollOffset = " + String.valueOf(scrollY));
+            Log.v("benmark", "mActionBarHeight = " + String.valueOf(mActionBarHeight));
+            if (scrollY >= mActionBarHeight && mActionBar.isShowing()) {
+                mActionBar.hide();
+            } else if (scrollY == 0 && !mActionBar.isShowing()) {
+
+                mActionBar.show();
+            }
+        }
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (mActionBar == null) {
+            return;
+        }
+        if (scrollState == ScrollState.UP) {
+            if (mActionBar.isShowing()) {
+                mActionBar.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!mActionBar.isShowing()) {
+                mActionBar.show();
+            }
         }
     }
 
@@ -186,7 +212,7 @@ public class FeauteredFragment extends Fragment implements ViewTreeObserver.OnSc
 
     private void setHeader(final View v){
 if(!isFeaturedHeaderSet) {
-    grid.addHeaderView(v);
+    grid.addHeaderView(v, null, true);
     ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
     query.addAscendingOrder("createdAt");
 
@@ -205,11 +231,17 @@ if(!isFeaturedHeaderSet) {
                 featuredText.setText(objects.get(0).getString("text"));
 
                 final String postLink = objects.get(0).getString("postLink");
+                final String text = objects.get(0).getString("text");
+                final String imagePath = objects.get(0).getString("imageUrl");
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(postLink));
+                        Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                        browserIntent.putExtra("postLink", postLink);
+                        browserIntent.putExtra("imagePath", imagePath);
+                        browserIntent.putExtra("text", text);
                         startActivity(browserIntent);
+
                     }
                 });
             } else {
@@ -274,6 +306,22 @@ if(!isFeaturedHeaderSet) {
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
                 textView.setTypeface(custom_font);
                 ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);
+
+                final String postLink = getItem(position).getPostUrl();
+                final String text = getItem(position).getPostText();
+                final String imagePath = getItem(position).getImageUrl();
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                        browserIntent.putExtra("postLink", postLink);
+                        browserIntent.putExtra("imagePath", imagePath);
+                        browserIntent.putExtra("text", text);
+                        startActivity(browserIntent);
+
+                    }
+                });
+
                 textView.setText(bandoPosts.get(position).getPostText());
 
                 if(getItem(position).getImageUrl().contains("og:image")){
