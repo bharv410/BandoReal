@@ -44,11 +44,10 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text=""
-		android:textColor="#FFF"
-		android:background="#99168807"
+		android:textColor="#262626"
+		android:background="@drawable/back"
 		android:id="@+id/socialTextView"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentTop="true"/>
-
+		android:layout_alignBottom="@id/grid_image"
+		android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
