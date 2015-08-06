@@ -38,11 +38,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
 import classes.CustomGridViewWithHeader;
+import classes.Utils;
 import in.srain.cube.views.GridViewWithHeaderAndFooter;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 
@@ -99,7 +101,9 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
                             //bp.setUsername(po.getString("username"));
                             bp.setPostText(po.getString("postText"));
                             bp.setPostType("article");
+                        bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
 
+                            Log.v("benmark", "hours dif  at " + Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
                             bp.setImageUrl(po.getString("imageUrl"));
 
                             bandoArray.add(bp);
@@ -295,6 +299,7 @@ if(!isFeaturedHeaderSet) {
             // TODO Auto-generated method stub
              ViewHolder holder;
             View grid;
+
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -303,6 +308,8 @@ if(!isFeaturedHeaderSet) {
                 grid = inflater.inflate(R.layout.grid_single, null);
                 //grid.setBackgroundColor(Color.parseColor("#999999"));
                 TextView textView = (TextView) grid.findViewById(R.id.grid_text);
+                TextView dateTextView = (TextView) grid.findViewById(R.id.textViewDate);
+                dateTextView.setText(getItem(position).getDateString());
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
                 textView.setTypeface(custom_font);
                 ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);

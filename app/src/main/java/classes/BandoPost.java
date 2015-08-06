@@ -4,6 +4,7 @@ package classes;
  * Created by benjamin.harvey on 8/4/15.
  */
 public class BandoPost {
+    private String dateString;
     private String uniqueId;
     private String postText;
     private String postUrl;
@@ -101,6 +102,14 @@ public class BandoPost {
 
     public String getUserProfilePic() {
         return userProfilePic;
+    }
+
+    public String getDateString(){
+        return dateString;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
     }
 }
 

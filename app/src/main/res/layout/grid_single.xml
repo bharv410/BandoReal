@@ -6,11 +6,26 @@
 	<com.kigeniushq.bandofinal.SquareImageView
 		android:id="@+id/grid_image"
 		android:src="@drawable/progress_animation"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:scaleType="centerCrop">
 	</com.kigeniushq.bandofinal.SquareImageView>
 
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:text="hours ago"
+		android:id="@+id/textViewDate"
+		android:layout_below="@+id/grid_image"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"/>
+
+	<View android:layout_width="fill_parent"
+		  android:id="@+id/randomline"
+		  android:layout_height="1dip"
+		  android:layout_below="@+id/textViewDate"
+		  android:background="#000000" />
 	<TextView
 		android:id="@+id/grid_text"
 		android:layout_width="wrap_content"
@@ -19,11 +34,11 @@
 		android:textColor="#CC000000"
 		android:layout_alignParentRight="true"
 		android:layout_alignParentEnd="true"
-		android:layout_below="@+id/grid_image"
+		android:layout_below="@+id/randomline"
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentStart="true"
 		android:text="Caption Text Goes Here">
 	</TextView>
 
 
-	</RelativeLayout>
+</RelativeLayout>
