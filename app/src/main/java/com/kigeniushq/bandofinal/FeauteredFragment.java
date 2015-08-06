@@ -85,7 +85,7 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
 
     private void getHotNewHipHop(){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
-        query.addAscendingOrder("createdAt");
+        query.addDescendingOrder("createdAt");
         query.setLimit(12);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
