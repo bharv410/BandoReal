@@ -39,9 +39,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     private void setupActionBar(){
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
-        actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
+        //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
 
 
         SpannableString s = new SpannableString("Bando");
@@ -56,13 +56,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
 
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+        // Bind the tabs to the ViewPager
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(mViewPager);
+        tabs.setShouldExpand(true);
+        tabs.setTextColor(Color.parseColor("#168807"));
+        tabs.setUnderlineColor(Color.parseColor("#168807"));
+        tabs.setIndicatorColor(Color.parseColor("#168807"));
+        tabs.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-            }
-        });
+//        tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                actionBar.setSelectedNavigationItem(position);
+//
+//            }
+//        });
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {

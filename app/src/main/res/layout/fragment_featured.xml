@@ -3,17 +3,24 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		tools:context=".MainActivity">
-
-		<com.kigeniushq.bandofinal.MyObservableGridView
-			android:numColumns="2"
-			android:gravity="center"
-			android:columnWidth="100dp"
-			android:stretchMode="columnWidth"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="#CCd3d3d3"
-			android:id="@+id/grid"
-			android:horizontalSpacing="2dp"
-			android:verticalSpacing="2dp"
-			/>
-	</RelativeLayout>
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="?android:attr/actionBarSize"
+		android:text=""
+		android:id="@+id/fakeActionBar"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"/>
+	<com.kigeniushq.bandofinal.MyObservableGridView
+		android:numColumns="2"
+		android:layout_below="@id/fakeActionBar"
+		android:gravity="center"
+		android:columnWidth="100dp"
+		android:stretchMode="columnWidth"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="#CCd3d3d3"
+		android:id="@+id/grid"
+		android:horizontalSpacing="2dp"
+		android:verticalSpacing="2dp"
+		/>
+</RelativeLayout>
