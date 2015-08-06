@@ -4,13 +4,14 @@
 		android:layout_height="match_parent"
 		tools:context=".MainActivity">
 
-		<in.srain.cube.views.GridViewWithHeaderAndFooter
+		<classes.CustomGridViewWithHeader
 			android:numColumns="2"
 			android:gravity="center"
 			android:columnWidth="100dp"
 			android:stretchMode="columnWidth"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
+			android:background="#CCd3d3d3"
 			android:id="@+id/grid"
 			android:horizontalSpacing="2dp"
 			android:verticalSpacing="2dp"
