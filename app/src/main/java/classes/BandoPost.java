@@ -1,9 +1,10 @@
 package classes;
 
+import java.util.Date;
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class BandoPost {
+public class BandoPost implements Comparable<BandoPost>{
     private String dateString;
     private String uniqueId;
     private String postText;
@@ -15,6 +16,7 @@ public class BandoPost {
     private String username;
     private String userProfilePic;
     private boolean postHasImage;
+    private Date dateTime;
 
     public BandoPost(){
 
@@ -88,6 +90,13 @@ public class BandoPost {
         this.uniqueId = uniqueId;
     }
 
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date datetime) {
+        this.dateTime = datetime;
+    }
     public String getUsername() {
         return username;
     }
@@ -110,6 +119,11 @@ public class BandoPost {
 
     public void setDateString(String dateString) {
         this.dateString = dateString;
+    }
+
+    @Override
+    public int compareTo(BandoPost o) {
+        return o.getDateTime().compareTo(getDateTime());
     }
 }
 

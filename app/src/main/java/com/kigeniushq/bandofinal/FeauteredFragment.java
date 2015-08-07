@@ -39,6 +39,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import android.support.v7.app.ActionBar;
 
@@ -51,7 +52,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class FeauteredFragment extends Fragment  implements ObservableScrollViewCallbacks {
+public class FeauteredFragment extends Fragment{
 
     ArrayList<BandoPost> bandoArray;
     MyObservableGridView grid;
@@ -91,31 +92,25 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     bandoArray = new ArrayList<>();
-                    int position = -1;
                     for (ParseObject po : objects) {
-                        position++;
                         BandoPost bp = new BandoPost();
-                            //setOgImage(po.getString("postLink"), position);
-                            Log.v("benmark", "getting og image for " + String.valueOf(position));
-                            bp.setPostUrl(po.getString("postLink"));
+                        bp.setPostUrl(po.getString("postLink"));
                         bp.setPostSourceSite(po.getString("siteType"));
-
-                            bp.setPostText(po.getString("postText"));
-                            bp.setPostType("article");
+                        bp.setPostText(po.getString("postText"));
+                        bp.setPostType("article");
                         bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
-                         bp.setImageUrl(po.getString("imageUrl"));
-
-                            bandoArray.add(bp);
-
+                        bp.setDateTime(po.getCreatedAt());
+                        bp.setImageUrl(po.getString("imageUrl"));
+                        bandoArray.add(bp);
                     }
+                    Collections.sort(bandoArray);
                     adapter = new CustomGrid(getActivity(), bandoArray);
-
                     grid = (MyObservableGridView) getActivity().findViewById(R.id.grid);
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
                     setHeader(headerView);
                     grid.setAdapter(adapter);
-                    grid.setScrollViewCallbacks(FeauteredFragment.this);
+                    grid.setScrollViewCallbacks((MainActivity)getActivity());
                     grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
@@ -128,38 +123,6 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
                 }
             }
         });
-    }
-
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        if (mActionBar != null ) {
-            if (scrollY >= mActionBarHeight && mActionBar.isShowing()) {
-                mActionBar.hide();
-            } else if (scrollY == 0 && !mActionBar.isShowing()) {
-
-                mActionBar.show();
-            }
-        }
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if (mActionBar == null) {
-            return;
-        }
-        if (scrollState == ScrollState.UP) {
-            if (mActionBar.isShowing()) {
-                mActionBar.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!mActionBar.isShowing()) {
-                mActionBar.show();
-            }
-        }
     }
 
     private void getInstagram(){
@@ -195,8 +158,6 @@ public class FeauteredFragment extends Fragment  implements ObservableScrollView
     @Override
     public void onStart() {
         super.onStart();
-
-
     }
 
     private void setHeader(final View v){
@@ -339,11 +300,6 @@ if(!isFeaturedHeaderSet) {
 
             return grid;
         }
-    }
-
-    private void setOgImage(String url, int position){
-        //new DownloadTask(position).execute(url);
-
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String> {

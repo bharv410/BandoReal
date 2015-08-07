@@ -6,15 +6,18 @@
 	<!-- Example General settings -->
 	<string name="pref_header_general">General</string>
 
-	<string name="pref_title_social_recommendations">Enable social recommendations</string>
-	<string name="pref_description_social_recommendations">Recommendations for people to contact
-		based on your message history
+	<string name="pref_title_social_twit">Connect Twitter Account</string>
+	<string name="pref_description_social_twit">Connect your twitter account to get customized content and improve daily posts
+	</string>
+
+	<string name="pref_title_social_ig">Connect Instagram Account</string>
+	<string name="pref_description_social_ig">Connect your instagram account to get customized content and improve daily posts
 	</string>
 
 	<string name="pref_title_display_name">Display name</string>
 	<string name="pref_default_display_name">John Smith</string>
 
-	<string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+	<string name="pref_title_add_friends_to_messages">Notifications?</string>
 	<string-array name="pref_example_list_titles">
 		<item>Always</item>
 		<item>When possible</item>
@@ -50,7 +53,7 @@
 	<string name="pref_title_system_sync_settings">System sync settings</string>
 
 	<!-- Example settings for Notifications -->
-	<string name="pref_header_notifications">Notifications</string>
+	<string name="pref_header_connect">Connect Accounts</string>
 
 	<string name="pref_title_new_message_notifications">New message notifications</string>
 

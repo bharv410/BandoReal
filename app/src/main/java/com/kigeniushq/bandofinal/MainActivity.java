@@ -1,6 +1,7 @@
 package com.kigeniushq.bandofinal;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -12,20 +13,26 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
 
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, ObservableScrollViewCallbacks {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+    private float mActionBarHeight;
+    public ActionBar mActionBar;
+    public static boolean loggedInTwitter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +45,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 
     private void setupActionBar(){
-        final ActionBar actionBar = getSupportActionBar();
+        mActionBar = getSupportActionBar();
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
+        mActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
 
 
@@ -48,7 +55,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/ptsansb.ttf");
         s.setSpan(new CustomTypefaceSpan(custom_font), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        actionBar.setTitle(s);
+        mActionBar.setTitle(s);
+
+        final TypedArray mstyled = getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics())
+                    / 3;
+        }
+        mstyled.recycle();
 
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getApplicationContext());
@@ -75,8 +91,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            actionBar.addTab(
-                    actionBar.newTab()
+            mActionBar.addTab(
+                    mActionBar.newTab()
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
@@ -93,6 +109,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+            return true;
+        }else if(id == R.id.action_feed_item){
+            startActivity(new Intent(getApplicationContext(), EditFeedActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -111,5 +130,37 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+        if (mActionBar != null ) {
+            if (scrollY >= mActionBarHeight && mActionBar.isShowing()) {
+                mActionBar.hide();
+            } else if (scrollY == 0 && !mActionBar.isShowing()) {
+
+                mActionBar.show();
+            }
+        }
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (mActionBar == null) {
+            return;
+        }
+        if (scrollState == ScrollState.UP) {
+            if (mActionBar.isShowing()) {
+                mActionBar.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!mActionBar.isShowing()) {
+                mActionBar.show();
+            }
+        }
     }
 }

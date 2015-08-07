@@ -1,13 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:tools="http://schemas.android.com/tools"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/feed_item_margin"
+				android:layout_marginRight="@dimen/feed_item_margin"
+				android:layout_marginTop="@dimen/feed_item_margin"
+				android:background="@drawable/bg_parent_rounded_corner">
 
 	<com.kigeniushq.bandofinal.SquareImageView
 		android:id="@+id/grid_image"
 		android:src="@drawable/progress_animation"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
 		android:scaleType="centerCrop">
 	</com.kigeniushq.bandofinal.SquareImageView>
 

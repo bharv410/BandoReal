@@ -1,13 +1,15 @@
 <resources>
 	<string name="app_name">BandoFinal</string>
 
-	<string name="title_section2">Nearby</string>
+	<string name="title_section2">My stuff</string>
 	<string name="title_section1">Featured</string>
 	<string name="title_section3">Section 3</string>
 
 	<string name="hello_world">Hello world!</string>
 
-	<string name="action_settings">Settings</string>
+	<string name="action_settings">General Settings</string>
+	<string name="action_edit_feed">Edit Feed</string>
 	<string name="title_activity_splash_screen">Bando</string>
 	<string name="title_activity_article_detail">ArticleDetailActivity</string>
+	<string name="title_activity_edit_feed">EditFeedActivity</string>
 </resources>

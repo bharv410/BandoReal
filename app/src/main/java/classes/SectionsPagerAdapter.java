@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.kigeniushq.bandofinal.FeauteredFragment;
 import com.kigeniushq.bandofinal.R;
-import com.kigeniushq.bandofinal.TweetsFragment;
+import com.kigeniushq.bandofinal.MyStuffFragment;
 
 import java.util.Locale;
 
@@ -25,7 +25,7 @@ Context context;
     public Fragment getItem(int position) {
         switch (position) {
             case 1:
-                return new TweetsFragment();
+                return new MyStuffFragment();
             case 0:
                 return new FeauteredFragment();
             default:
