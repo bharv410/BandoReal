@@ -1,5 +1,6 @@
 package com.kigeniushq.bandofinal;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,9 +18,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -46,11 +50,27 @@ public class ArticleDetailActivity extends ActionBarActivity {
     TextView articleTitleTextView;
 
     ImageView imv;
+    private WebView mWebview ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article_detail);
+        //setContentView(R.layout.activity_article_detail);
+
+        mWebview  = new WebView(this);
+
+        mWebview.getSettings().setJavaScriptEnabled(true); // enable javascript
+
+        final Activity activity = this;
+
+        mWebview.setWebViewClient(new WebViewClient() {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Toast.makeText(activity, description, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mWebview .loadUrl(getIntent().getStringExtra("postLink"));
+        setContentView(mWebview);
 
 
         final ActionBar actionBar = getSupportActionBar();
@@ -69,21 +89,21 @@ public class ArticleDetailActivity extends ActionBarActivity {
         text = getIntent().getStringExtra("text");
         articleTitleTextView = (TextView)findViewById(R.id.textViewDetail);
         imv = (ImageView)findViewById(R.id.imageViewHeaderDetail);
-        articleTitleTextView.setText(text);
+        //articleTitleTextView.setText(text);
         Log.v("benmark", "imagePath = " + imagePath);
-        Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.progress_animation).into(imv);
+        //Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.progress_animation).into(imv);
 
-        imv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getIntent().getStringExtra("postLink")));
+//        imv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getIntent().getStringExtra("postLink")));
+//
+//                startActivity(browserIntent);
+//            }
+//        });
 
-                startActivity(browserIntent);
-            }
-        });
 
-
-        new DownloadTask(imv, getApplicationContext()).execute(getIntent().getStringExtra("postLink"));
+        //new DownloadTask(imv, getApplicationContext()).execute(getIntent().getStringExtra("postLink"));
 
     }
 

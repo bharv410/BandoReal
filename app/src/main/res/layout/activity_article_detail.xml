@@ -38,4 +38,15 @@
 		android:id="@+id/textView"
 		android:layout_centerVertical="true"
 		android:layout_centerHorizontal="true"/>
+
+	<WebView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/webView"
+		android:layout_alignTop="@+id/textView"
+		android:layout_alignLeft="@+id/imageViewHeaderDetail"
+		android:layout_alignStart="@+id/imageViewHeaderDetail"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true"/>
 </RelativeLayout>

@@ -28,6 +28,7 @@
 	<View android:layout_width="fill_parent"
 		  android:id="@+id/randomline"
 		  android:layout_height="1dip"
+		  android:layout_marginBottom="3dp"
 		  android:layout_below="@+id/textViewDate"
 		  android:background="#000000" />
 	<TextView

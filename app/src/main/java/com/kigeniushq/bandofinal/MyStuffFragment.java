@@ -303,9 +303,6 @@ public class MyStuffFragment extends Fragment{
         protected void onPostExecute(String result){
             gettingTwit = false;
             Collections.sort(bandoArray);
-            for(BandoPost bp: bandoArray){
-                Log.v("benmark", "date =" + bp.getDateTime().toString());
-            }
             listView = (ObservableListView) getActivity().findViewById(R.id.list);
             listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, bandoArray);
             listView.setAdapter(listAdapter);

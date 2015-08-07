@@ -1,5 +1,7 @@
 package com.kigeniushq.bandofinal.editprefences;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -87,19 +89,20 @@ public void onCreate(Bundle savedInstanceState) {
 
 private void displayListView() {
 
-        //Array list of countries
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         ArrayList<Country> countryList = new ArrayList<Country>();
-        Country country = new Country("@drake, @abelxo etc.","MUSIC",true);
+        Country country = new Country("@drake, HotNewHipHop.com etc.","MUSIC",preferences.getBoolean("MUSIC",false));
         countryList.add(country);
-        country = new Country("@kingjames, @stephenasmith etc.","SPORTS",false);
+        country = new Country("@kingjames, @stephenasmith, ESPN etc.","SPORTS",preferences.getBoolean("SPORTS",false));
         countryList.add(country);
-        country = new Country("@tazsangels, @kendalljenner ","CULTURE",true);
+        country = new Country("@tazsangels, @kendalljenner ","CULTURE",preferences.getBoolean("CULTURE",false));
         countryList.add(country);
-        country = new Country("@kevinhart4real, @lilduval","COMEDY",true);
+        country = new Country("@kevinhart4real, @lilduval","COMEDY",preferences.getBoolean("COMEDY",false));
         countryList.add(country);
-        country = new Country("@natgeo, @vanstyles","PHOTOS & ART",false);
+        country = new Country("@natgeo, @vanstyles","PHOTOS & ART",preferences.getBoolean("PHOTOS & ART",false));
         countryList.add(country);
-        country = new Country("instagram,twitter","TRENDING",false);
+        country = new Country("instagram,twitter","TRENDING",preferences.getBoolean("TRENDING",false));
         countryList.add(country);
 
         //create an ArrayAdaptar from the String Array
@@ -108,19 +111,21 @@ private void displayListView() {
         ListView listView = (ListView) findViewById(R.id.listView1);
         // Assign adapter to ListView
         listView.setAdapter(dataAdapter);
-
-
-        listView.setOnItemClickListener(new OnItemClickListener() {
-public void onItemClick(AdapterView<?> parent, View view,
-        int position, long id) {
-        // When clicked, show a toast with the TextView text
+listView.setOnItemClickListener(new OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Country country = (Country) parent.getItemAtPosition(position);
-        Toast.makeText(getApplicationContext(),
-        "Clicked on Row: " + country.getName(),
-        Toast.LENGTH_LONG).show();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ChooseCategoriesActivity.this);
+        SharedPreferences.Editor editor = preferences.edit();
+        if(view!=null){
+            CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkBox1);
+            checkBox.setChecked(!checkBox.isChecked());
+            editor.putBoolean(country.getName(), checkBox.isChecked());
+            editor.apply();
+            country.setSelected(checkBox.isChecked());
         }
-        });
-
+    }
+});
         }
 
 private class MyCustomAdapter extends ArrayAdapter<Country> {
@@ -159,10 +164,11 @@ private class MyCustomAdapter extends ArrayAdapter<Country> {
                 public void onClick(View v) {
                     CheckBox cb = (CheckBox) v ;
                     Country country = (Country) cb.getTag();
-                    Toast.makeText(getApplicationContext(),
-                            "Clicked on Checkbox: " + cb.getText() +
-                                    " is " + cb.isChecked(),
-                            Toast.LENGTH_LONG).show();
+
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ChooseCategoriesActivity.this);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean(country.getName(), cb.isChecked());
+                    editor.apply();
                     country.setSelected(cb.isChecked());
                 }
             });
@@ -202,9 +208,6 @@ private class MyCustomAdapter extends ArrayAdapter<Country> {
                         responseText.append("\n" + country.getName());
                     }
                 }
-
-                Toast.makeText(getApplicationContext(),
-                        responseText, Toast.LENGTH_LONG).show();
                 finish();
 
             }
