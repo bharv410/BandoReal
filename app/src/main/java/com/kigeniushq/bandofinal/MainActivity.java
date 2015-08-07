@@ -100,7 +100,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     private void setupActionBar(){
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayUseLogoEnabled(true);
-        mActionBar.setHomeButtonEnabled(true);
         mActionBar.setTitle("");
         mActionBar.setDisplayShowHomeEnabled(true);
         mActionBar.setIcon(R.drawable.bandoheader);

@@ -1,6 +1,7 @@
 package com.kigeniushq.bandofinal;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,6 +88,8 @@ public class MyStuffFragment extends Fragment{
 
     public ActionBar mActionBar;
 
+    private ProgressBar progress;
+
     public MyStuffFragment() {
     }
 
@@ -106,6 +110,8 @@ public class MyStuffFragment extends Fragment{
         };
         mApp = new InstagramApp(getActivity(), client_id, client_secret, callback_url);
         mApp.setListener(listener);
+
+        progress = (ProgressBar)getActivity().findViewById(R.id.progressBar1);
     }
 
     @Override
@@ -315,7 +321,7 @@ public class MyStuffFragment extends Fragment{
                     //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                 }
             });
-
+            progress.setVisibility(View.GONE);
         }
     }
     private static class ViewHolder {
@@ -462,7 +468,8 @@ String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("te
                     bandoArray.add(bp);
                 }
                 Collections.sort(bandoArray);
-                asyncsLoading.set(pos, new Boolean(false));
+                if(asyncsLoading.size()>0)
+                    asyncsLoading.set(pos, new Boolean(false));
                 ArrayList<Boolean> localCopyOfInstagramTasksLoading = asyncsLoading;
 
                 boolean downloadIGDone = true;

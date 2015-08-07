@@ -22,8 +22,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -48,6 +50,7 @@ import classes.CustomTypefaceSpan;
 public class ArticleDetailActivity extends ActionBarActivity {
     String imagePath, text;
     TextView articleTitleTextView;
+    ProgressBar pb5;
 
     ImageView imv;
     private WebView mWebview ;
@@ -55,9 +58,10 @@ public class ArticleDetailActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_article_detail);
+        setContentView(R.layout.activity_article_detail);
+        pb5 = (ProgressBar)findViewById(R.id.progressBar5);
 
-        mWebview  = new WebView(this);
+        mWebview  = (WebView)findViewById(R.id.webView);
 
         mWebview.getSettings().setJavaScriptEnabled(true); // enable javascript
 
@@ -70,8 +74,6 @@ public class ArticleDetailActivity extends ActionBarActivity {
         });
 
         mWebview .loadUrl(getIntent().getStringExtra("postLink"));
-        setContentView(mWebview);
-
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
@@ -83,12 +85,20 @@ public class ArticleDetailActivity extends ActionBarActivity {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         actionBar.setTitle(s);
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pb5.setVisibility(View.GONE);
+            }
+        }, 1000);
 
 
-        imagePath = getIntent().getStringExtra("imagePath");
-        text = getIntent().getStringExtra("text");
-        articleTitleTextView = (TextView)findViewById(R.id.textViewDetail);
-        imv = (ImageView)findViewById(R.id.imageViewHeaderDetail);
+//
+//        imagePath = getIntent().getStringExtra("imagePath");
+//        text = getIntent().getStringExtra("text");
+//        articleTitleTextView = (TextView)findViewById(R.id.textViewDetail);
+//        imv = (ImageView)findViewById(R.id.imageViewHeaderDetail);
         //articleTitleTextView.setText(text);
         Log.v("benmark", "imagePath = " + imagePath);
         //Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.progress_animation).into(imv);
@@ -184,6 +194,14 @@ public class ArticleDetailActivity extends ActionBarActivity {
         public int position;
     }
 
+
+    public void bookmark(View v){
+Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show();
+    }
+
+    public void share(View v){
+        Toast.makeText(getApplicationContext(), "Shared!", Toast.LENGTH_LONG).show();
+    }
     private void updateParseOgImage(final String ogUrl){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.whereEqualTo("postText", text);

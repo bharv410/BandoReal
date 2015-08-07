@@ -4,49 +4,51 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_marginBottom="10dp">
-	<com.kigeniushq.bandofinal.SquareImageView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:src="@drawable/progress_animation"
-		android:scaleType="fitXY"
-		android:id="@+id/imageViewHeaderDetail"
-		android:layout_centerHorizontal="true"
-		android:layout_marginLeft="2dp"
-		android:layout_marginRight="2dp"
-		android:layout_marginTop="2dp"
-		android:layout_above="@+id/textView"/>
-
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="Medium Text !!"
-		android:background="#CC168807"
-		android:textColor="#FFF"
-		android:maxLines="3"
-		android:id="@+id/textViewDetail"
-		android:layout_alignBottom="@+id/imageViewHeaderDetail"
-		android:layout_centerHorizontal="true"/>
-
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text=""
-		android:id="@+id/textView"
-		android:layout_centerVertical="true"
-		android:layout_centerHorizontal="true"/>
 
 	<WebView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:id="@+id/webView"
-		android:layout_alignTop="@+id/textView"
-		android:layout_alignLeft="@+id/imageViewHeaderDetail"
-		android:layout_alignStart="@+id/imageViewHeaderDetail"
-		android:layout_alignParentBottom="true"
+		android:layout_alignParentTop="true"
 		android:layout_alignParentRight="true"
-		android:layout_alignParentEnd="true"/>
+		android:layout_above="@+id/relativeLayout"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:id="@+id/relativeLayout"
+		android:layout_alignParentBottom="true">
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="SHARE"
+			android:id="@+id/button"
+			android:layout_alignParentTop="true"
+			android:onClick="share"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Bookmark"
+			android:onClick="bookmark"
+			android:id="@+id/button2"
+			android:layout_centerVertical="true"
+			android:layout_toRightOf="@+id/button"
+			android:layout_toEndOf="@+id/button"/>
+
+	</RelativeLayout>
+
+	<ProgressBar
+		style="?android:attr/progressBarStyleLarge"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/progressBar5"
+		android:visibility="visible"
+		android:layout_centerVertical="true"
+		android:layout_centerHorizontal="true"/>
 </RelativeLayout>

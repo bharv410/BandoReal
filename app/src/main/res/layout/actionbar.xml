@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="match_parent"
+	android:gravity="center_vertical"
+	android:background="#168807">
+	<ImageView
+		android:id="@+id/header"
+		android:contentDescription="@string/app_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingLeft="@dimen/feed_item_padding_left_right"
+		android:paddingRight="@dimen/feed_item_padding_left_right"
+		android:src="@drawable/bandoheader"/>
+
+	<EditText
+		android:id="@+id/et_actionbar_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text=""
+		android:gravity ="center"
+		android:textColor="@android:color/black"
+		android:textStyle="bold"
+		android:background="@android:color/transparent"
+		/>
+</LinearLayout>

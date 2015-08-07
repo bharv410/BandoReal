@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -61,6 +62,8 @@ public class FeauteredFragment extends Fragment{
     private float mActionBarHeight;
     public ActionBar mActionBar;
 
+    ProgressBar pb;
+
     boolean isFeaturedHeaderSet = false;
 
     public FeauteredFragment() {
@@ -69,6 +72,7 @@ public class FeauteredFragment extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        pb = (ProgressBar)getActivity().findViewById(R.id.progressBar2);
 
         mActionBar = ((ActionBarActivity)getActivity()).getSupportActionBar();
 
@@ -118,6 +122,7 @@ public class FeauteredFragment extends Fragment{
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
+                    pb.setVisibility(View.GONE);
                 } else {
                     Log.v("benmark", "code = " + String.valueOf(e.getCode()));
                 }
