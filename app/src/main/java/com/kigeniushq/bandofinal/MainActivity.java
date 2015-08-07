@@ -1,5 +1,9 @@
 package com.kigeniushq.bandofinal;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -8,6 +12,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -23,7 +29,11 @@ import android.view.Window;
 import com.astuetz.PagerSlidingTabStrip;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.kigeniushq.bandofinal.editprefences.AlarmReceiver;
 import com.kigeniushq.bandofinal.editprefences.ChooseCategoriesActivity;
+
+import java.util.Calendar;
+import java.util.Random;
 
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
@@ -44,13 +54,59 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         setContentView(R.layout.activity_main);
 
         setupActionBar();
+
+        setMorningAlarm();
     }
 
+    private void setMorningAlarm(){
+        Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                MainActivity.this, 0, myIntent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar firingCal= Calendar.getInstance();
+        Calendar currentCal = Calendar.getInstance();
+
+        firingCal.set(Calendar.HOUR, 8); // At the hour you wanna fire
+        firingCal.set(Calendar.MINUTE, 0); // Particular minute
+        firingCal.set(Calendar.SECOND, 0); // particular second
+
+        long intendedTime = firingCal.getTimeInMillis();
+        long currentTime = currentCal.getTimeInMillis();
+
+        if(intendedTime >= currentTime) // you can add buffer time too here to ignore some small differences in milliseconds
+        {
+            //set from today
+            alarmManager.setRepeating(AlarmManager.RTC,
+                    intendedTime , AlarmManager.INTERVAL_DAY,
+                    pendingIntent);
+
+        }
+        else{
+            //set from next day
+            // you might consider using calendar.add() for adding one day to the current day
+            firingCal.add(Calendar.DAY_OF_MONTH, 1);
+            intendedTime = firingCal.getTimeInMillis();
+
+            alarmManager.setRepeating(AlarmManager.RTC,
+                    intendedTime , AlarmManager.INTERVAL_DAY,
+                    pendingIntent);
+
+        }
+    }
 
     private void setupActionBar(){
         mActionBar = getSupportActionBar();
-        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        mActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
+        mActionBar.setDisplayUseLogoEnabled(true);
+        mActionBar.setHomeButtonEnabled(true);
+        mActionBar.setTitle("");
+        mActionBar.setDisplayShowHomeEnabled(true);
+        mActionBar.setIcon(R.drawable.bandoheader);
+
+//        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        mActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
 
 
@@ -58,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/ptsansb.ttf");
         s.setSpan(new CustomTypefaceSpan(custom_font), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mActionBar.setTitle(s);
+        //mActionBar.setTitle(s);
 
         final TypedArray mstyled = getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
         TypedValue tv = new TypedValue();

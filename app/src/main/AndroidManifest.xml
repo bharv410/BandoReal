@@ -11,15 +11,16 @@
         android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:logo="@drawable/bandoheader"
+        android:theme="@style/CustomActionBarTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:logo="@drawable/bandoheader">
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:logo="@drawable/bandoheader">
         </activity>
         <activity
             android:name=".LoadingScreen"
@@ -43,11 +44,13 @@
         </activity>
         <activity
             android:name=".ArticleDetailActivity"
-            android:label="@string/title_activity_article_detail" >
+            android:label="@string/title_activity_article_detail"
+            android:logo="@drawable/bandoheader">
         </activity>
         <activity
             android:name=".EditFeedActivity"
-            android:label="@string/title_activity_edit_feed" >
+            android:label="@string/title_activity_edit_feed"
+            android:logo="@drawable/bandoheader">
         </activity>
         <activity
             android:name=".editprefences.ChooseCategoriesActivity"
