@@ -176,7 +176,8 @@ if(!isFeaturedHeaderSet) {
 
                 TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
-                featuredText.setTypeface(custom_font);
+                if(featuredText!=null)
+                    featuredText.setTypeface(custom_font);
 
                 featuredText.setText(objects.get(0).getString("text"));
 

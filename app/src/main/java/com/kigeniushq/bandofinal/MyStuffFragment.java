@@ -118,11 +118,13 @@ public class MyStuffFragment extends Fragment{
                 asyncsLoading = new ArrayList<>();
                 //mApp.authorize();
                 new GetInstagramImagesAsync(0).execute(new URL("https://api.instagram.com/v1/users/19410587/media/recent?access_token=" + mApp.getAccessToken()));
-
                 new GetInstagramImagesAsync(1).execute(new URL(INSTYPREFIX_URL + "6380930"+INSTSUFIX_URL+ mApp.getAccessToken()));
                 new GetInstagramImagesAsync(2).execute(new URL(INSTYPREFIX_URL + "50417061"+INSTSUFIX_URL+ mApp.getAccessToken()));
-
                 new GetInstagramImagesAsync(3).execute(new URL(INSTYPREFIX_URL + "8947681"+INSTSUFIX_URL+ mApp.getAccessToken()));
+                new GetInstagramImagesAsync(4).execute(new URL(INSTYPREFIX_URL + "6720655"+INSTSUFIX_URL+ mApp.getAccessToken()));
+                new GetInstagramImagesAsync(5).execute(new URL(INSTYPREFIX_URL + "6590609"+INSTSUFIX_URL+ mApp.getAccessToken()));
+                new GetInstagramImagesAsync(6).execute(new URL(INSTYPREFIX_URL + "14455831"+INSTSUFIX_URL+ mApp.getAccessToken()));
+                new GetInstagramImagesAsync(7).execute(new URL(INSTYPREFIX_URL + "266319242"+INSTSUFIX_URL+ mApp.getAccessToken()));
 
             }else{
                 Toast.makeText(getActivity(), "Log in to instagram to get posts on feed", Toast.LENGTH_LONG);
@@ -166,15 +168,84 @@ public class MyStuffFragment extends Fragment{
 //First param of Paging() is the page number, second is the number per page (this is capped around 200 I think.
             Paging paging = new Paging(1, 3);
             try {
-                List<twitter4j.Status> statusesMeek = twitter.getUserTimeline("meekmill", paging);
+                List<twitter4j.Status> statusesMeek = twitter.getUserTimeline("Pitchfork", paging);
 
-                List<twitter4j.Status> statusesKendall = twitter.getUserTimeline("kendalljenner", paging);
+                List<twitter4j.Status> statusesKendall = twitter.getUserTimeline("48tweetsofpower", paging);
 
                 List<twitter4j.Status> statusesDennis = twitter.getUserTimeline("menacetodennis", paging);
 
-                List<twitter4j.Status> statusesBen = twitter.getUserTimeline("lilbthebasedgod", paging);
+                List<twitter4j.Status> statusesBen = twitter.getUserTimeline("nyctsubway", paging);
 
-                List<twitter4j.Status> statusesKylie = twitter.getUserTimeline("kyliejenner", paging);
+                List<twitter4j.Status> statusesgothamist = twitter.getUserTimeline("gothamist", paging);
+
+                List<twitter4j.Status> statusesHot97 = twitter.getUserTimeline("Hot97", paging);
+
+                List<twitter4j.Status> statusesKendrick = twitter.getUserTimeline("Kendricklamar", paging);
+
+                List<twitter4j.Status> statusesapple = twitter.getUserTimeline("applemusic", paging);
+
+                List<twitter4j.Status> statusesmetro = twitter.getUserTimeline("metroboomin", paging);
+
+                List<twitter4j.Status> statusesfutu = twitter.getUserTimeline("1future", paging);
+
+                for(twitter4j.Status st : statusesgothamist){
+                    BandoPost bp = new BandoPost();
+                    bp.setPostUrl(st.getSource());
+                    bp.setPostSourceSite(st.getSource());
+                    bp.setPostText(st.getText());
+                    bp.setPostType("twitter");
+                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                    bp.setDateTime(st.getCreatedAt());
+                    bandoArray.add(bp);
+                }
+
+                for(twitter4j.Status st : statusesHot97){
+                    BandoPost bp = new BandoPost();
+                    bp.setPostUrl(st.getSource());
+                    bp.setPostSourceSite(st.getSource());
+                    bp.setPostText(st.getText());
+                    bp.setPostType("twitter");
+                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                    bp.setDateTime(st.getCreatedAt());
+                    bandoArray.add(bp);
+                }
+
+                for(twitter4j.Status st : statusesKendrick){
+                    BandoPost bp = new BandoPost();
+                    bp.setPostUrl(st.getSource());
+                    bp.setPostSourceSite(st.getSource());
+                    bp.setPostText(st.getText());
+                    bp.setPostType("twitter");
+                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                    bp.setDateTime(st.getCreatedAt());
+                    bandoArray.add(bp);
+                }
+                for(twitter4j.Status st : statusesapple){
+                    BandoPost bp = new BandoPost();
+                    bp.setPostUrl(st.getSource());
+                    bp.setPostSourceSite(st.getSource());
+                    bp.setPostText(st.getText());
+                    bp.setPostType("twitter");
+                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                    bp.setDateTime(st.getCreatedAt());
+                    bandoArray.add(bp);
+                }
+
+                for(twitter4j.Status st : statusesmetro){
+                    BandoPost bp = new BandoPost();
+                    bp.setPostUrl(st.getSource());
+                    bp.setPostSourceSite(st.getSource());
+                    bp.setPostText(st.getText());
+                    bp.setPostType("twitter");
+                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                    bp.setDateTime(st.getCreatedAt());
+                    bandoArray.add(bp);
+                }
 
                 for(twitter4j.Status st : statusesMeek){
                     BandoPost bp = new BandoPost();
@@ -211,17 +282,6 @@ public class MyStuffFragment extends Fragment{
                     bandoArray.add(bp);
                 }
                 for(twitter4j.Status st : statusesBen){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-                for(twitter4j.Status st : statusesKylie){
                     BandoPost bp = new BandoPost();
                     bp.setPostUrl(st.getSource());
                     bp.setPostSourceSite(st.getSource());
@@ -381,6 +441,7 @@ public class MyStuffFragment extends Fragment{
 
                 e.printStackTrace();
             }
+
             return jsonArr.length();
         }
 

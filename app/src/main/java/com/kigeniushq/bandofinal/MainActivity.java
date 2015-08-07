@@ -1,11 +1,13 @@
 package com.kigeniushq.bandofinal;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -21,6 +23,7 @@ import android.view.Window;
 import com.astuetz.PagerSlidingTabStrip;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.kigeniushq.bandofinal.editprefences.ChooseCategoriesActivity;
 
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
@@ -81,13 +84,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         tabs.setIndicatorColor(Color.parseColor("#168807"));
         tabs.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-//        tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-//            @Override
-//            public void onPageSelected(int position) {
-//                actionBar.setSelectedNavigationItem(position);
-//
-//            }
-//        });
+        tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if(position==1){
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    boolean previouslyStarted = prefs.getBoolean("pref_previously_started", false);
+                    if(!previouslyStarted) {
+                        SharedPreferences.Editor edit = prefs.edit();
+                        edit.putBoolean("pref_previously_started",Boolean.TRUE);
+                        edit.commit();
+                        startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
+                    }
+                }
+            }
+        });
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
@@ -111,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }else if(id == R.id.action_feed_item){
-            startActivity(new Intent(getApplicationContext(), EditFeedActivity.class));
+            startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -122,6 +133,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
+
     }
 
     @Override

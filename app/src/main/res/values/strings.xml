@@ -12,4 +12,5 @@
 	<string name="title_activity_splash_screen">Bando</string>
 	<string name="title_activity_article_detail">ArticleDetailActivity</string>
 	<string name="title_activity_edit_feed">EditFeedActivity</string>
+	<string name="title_activity_choose_categories">ChooseCategoriesActivity</string>
 </resources>
