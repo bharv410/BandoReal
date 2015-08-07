@@ -422,6 +422,7 @@ public class MyStuffFragment extends Fragment{
 
         protected Integer doInBackground(URL... urls) {
             try{
+                if(asyncsLoading.size()>0)
                 asyncsLoading.add(pos,new Boolean(true));
 
                 URLConnection tc = urls[0].openConnection();

@@ -96,6 +96,8 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        twitPref.setIcon(R.drawable.my_null_icon);
+
         igPref = (CheckBoxPreference) findPreference("ig_checkbox");
         igPref.setChecked(mApp.hasAccessToken());
         igPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -104,6 +106,8 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        igPref.setIcon(R.drawable.my_null_icon);
 
     }
 

@@ -17,7 +17,7 @@
 	<string name="pref_title_display_name">Display name</string>
 	<string name="pref_default_display_name">John Smith</string>
 
-	<string name="pref_title_add_friends_to_messages">Notifications?</string>
+	<string name="pref_title_add_friends_to_messages">Push Notifications</string>
 	<string-array name="pref_example_list_titles">
 		<item>Always</item>
 		<item>When possible</item>
