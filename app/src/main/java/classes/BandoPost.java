@@ -125,5 +125,16 @@ public class BandoPost implements Comparable<BandoPost>{
     public int compareTo(BandoPost o) {
         return o.getDateTime().compareTo(getDateTime());
     }
+
+    @Override
+    public boolean equals(Object c) {
+        if(c instanceof BandoPost){
+            BandoPost bp = (BandoPost)c;
+            if(bp.postText.contains(this.postText)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

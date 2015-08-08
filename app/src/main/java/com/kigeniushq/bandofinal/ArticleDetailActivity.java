@@ -200,7 +200,11 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
     }
 
     public void share(View v){
-        Toast.makeText(getApplicationContext(), "Shared!", Toast.LENGTH_LONG).show();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" +getIntent().getStringExtra("text")+"\"" +" via @bandotheapp");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
     private void updateParseOgImage(final String ogUrl){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");

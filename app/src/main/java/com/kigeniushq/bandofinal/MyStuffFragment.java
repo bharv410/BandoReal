@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 
@@ -70,7 +71,7 @@ public class MyStuffFragment extends Fragment{
     static final String PREF_KEY_OAUTH_TOKEN = "oauth_token";
     static final String PREF_KEY_OAUTH_SECRET = "oauth_token_secret";
     private final String INSTYPREFIX_URL = "https://api.instagram.com/v1/users/";
-    private final String INSTSUFIX_URL = "/media/recent?access_token=";
+    private final String INSTSUFIX_URL = "/media/recent?client_id=";
     private final String client_id = "49fcbbb3abe9448798d8849806da6cd4";
     private final String client_secret = "424a0cc8965a4f7da7c73897fb90b810";
     private final String callback_url = "http://phantom.com";
@@ -117,27 +118,34 @@ public class MyStuffFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
+        Boolean showMusic = preferences.getBoolean("MUSIC", false);
+        Boolean showSports = preferences.getBoolean("SPORTS",false);
+        Boolean showCulture = preferences.getBoolean("CULTURE",false);
+        Boolean showComedy = preferences.getBoolean("COMEDY",false);
 
         try{
-            if(mApp.hasAccessToken()){
                 bandoArray = new ArrayList<>();
                 asyncsLoading = new ArrayList<>();
-                //mApp.authorize();
-                new GetInstagramImagesAsync(0).execute(new URL("https://api.instagram.com/v1/users/19410587/media/recent?access_token=" + mApp.getAccessToken()));
-                new GetInstagramImagesAsync(1).execute(new URL(INSTYPREFIX_URL + "6380930"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(2).execute(new URL(INSTYPREFIX_URL + "50417061"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(3).execute(new URL(INSTYPREFIX_URL + "8947681"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(4).execute(new URL(INSTYPREFIX_URL + "6720655"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(5).execute(new URL(INSTYPREFIX_URL + "6590609"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(6).execute(new URL(INSTYPREFIX_URL + "14455831"+INSTSUFIX_URL+ mApp.getAccessToken()));
-                new GetInstagramImagesAsync(7).execute(new URL(INSTYPREFIX_URL + "266319242"+INSTSUFIX_URL+ mApp.getAccessToken()));
 
-            }else{
-                Toast.makeText(getActivity(), "Log in to instagram to get posts on feed", Toast.LENGTH_LONG);
+            List<List<String>> allInstagramUsers = new ArrayList<List<String>>(4);
+            if ((showMusic))
+                allInstagramUsers.add(musiclisti);
+            if(showSports)
+                allInstagramUsers.add(sportlisti);
+            if(showCulture)
+                allInstagramUsers.add(culturelisti);
+            if(showComedy)
+                allInstagramUsers.add(comedylisti);
+
+            int counter1 = 0;
+            for(List<String> individualList : allInstagramUsers){
+                for(String individualId : individualList){
+                    new GetInstagramImagesAsync(counter1).execute(new URL(INSTYPREFIX_URL + individualId+INSTSUFIX_URL+ client_id));
+                    counter1++;
+                }
             }
-
         }catch (MalformedURLException e){
-
         }
     }
 
@@ -172,131 +180,40 @@ public class MyStuffFragment extends Fragment{
             Twitter twitter = new TwitterFactory(builder.build())
                     .getInstance(accessToken);
 //First param of Paging() is the page number, second is the number per page (this is capped around 200 I think.
-            Paging paging = new Paging(1, 3);
+            Paging paging = new Paging(1, 1);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
+            Boolean showMusic = preferences.getBoolean("MUSIC", false);
+            Boolean showSports = preferences.getBoolean("SPORTS",false);
+            Boolean showCulture = preferences.getBoolean("CULTURE", false);
+            Boolean showComedy = preferences.getBoolean("COMEDY",false);
             try {
-                List<twitter4j.Status> statusesMeek = twitter.getUserTimeline("Pitchfork", paging);
+                List<List<String>> allTwitterUsers = new ArrayList<List<String>>(4);
+                if ((showMusic))
+                    allTwitterUsers.add(musiclistt);
+                if(showSports)
+                    allTwitterUsers.add(sportlistt);
+                if(showCulture)
+                    allTwitterUsers.add(culturelistt);
+                if(showComedy)
+                    allTwitterUsers.add(comedylistt);
 
-                List<twitter4j.Status> statusesKendall = twitter.getUserTimeline("48tweetsofpower", paging);
-
-                List<twitter4j.Status> statusesDennis = twitter.getUserTimeline("menacetodennis", paging);
-
-                List<twitter4j.Status> statusesBen = twitter.getUserTimeline("nyctsubway", paging);
-
-                List<twitter4j.Status> statusesgothamist = twitter.getUserTimeline("gothamist", paging);
-
-                List<twitter4j.Status> statusesHot97 = twitter.getUserTimeline("Hot97", paging);
-
-                List<twitter4j.Status> statusesKendrick = twitter.getUserTimeline("Kendricklamar", paging);
-
-                List<twitter4j.Status> statusesapple = twitter.getUserTimeline("applemusic", paging);
-
-                List<twitter4j.Status> statusesmetro = twitter.getUserTimeline("metroboomin", paging);
-
-                List<twitter4j.Status> statusesfutu = twitter.getUserTimeline("1future", paging);
-
-                for(twitter4j.Status st : statusesgothamist){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-
-                for(twitter4j.Status st : statusesHot97){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-
-                for(twitter4j.Status st : statusesKendrick){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-                for(twitter4j.Status st : statusesapple){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-
-                for(twitter4j.Status st : statusesmetro){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-
-                for(twitter4j.Status st : statusesMeek){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-
-                for(twitter4j.Status st : statusesKendall){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-                for(twitter4j.Status st : statusesDennis){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
-                }
-                for(twitter4j.Status st : statusesBen){
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(st.getSource());
-                    bp.setPostSourceSite(st.getSource());
-                    bp.setPostText(st.getText());
-                    bp.setPostType("twitter");
-                    bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                    bp.setDateTime(st.getCreatedAt());
-                    bandoArray.add(bp);
+                int counter1 = 0;
+                for(List<String> individualList : allTwitterUsers){
+                    for(String individualId : individualList){
+                        List<twitter4j.Status> statusesMeek = twitter.getUserTimeline("Pitchfork", paging);
+                        for(twitter4j.Status st : statusesMeek){
+                            BandoPost bp = new BandoPost();
+                            bp.setPostUrl(st.getSource());
+                            bp.setPostSourceSite(st.getSource());
+                            bp.setPostText(st.getText());
+                            bp.setPostType("twitter");
+                            bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
+                            bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
+                            bp.setDateTime(st.getCreatedAt());
+                            if(!bandoArray.contains(bp))
+                                bandoArray.add(bp);
+                        }
+                    }
                 }
             }catch (TwitterException tw){
 
@@ -465,8 +382,9 @@ String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("te
                     bp.setPostType("instagram");
                     bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))).getTime(), getActivity()));
                     bp.setImageUrl(thestandardImageUrl);
-                    bp.setDateTime(new Date((long)Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))*1000));
-                    bandoArray.add(bp);
+                    bp.setDateTime(new Date((long) Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))*1000));
+                    if(!bandoArray.contains(bp))
+                        bandoArray.add(bp);
                 }
                 Collections.sort(bandoArray);
                 if(asyncsLoading.size()>0)
@@ -490,4 +408,77 @@ String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("te
             }
         }
     }
+
+    ArrayList<String> musiclistt = new ArrayList<String>() {{
+        add("Hot97");
+        add("Kendricklamar");
+        add("drake");
+        add("metroboomin");
+        add("applemusic");
+        add("1future");
+    }};
+
+    ArrayList<String> sportlistt = new ArrayList<String>() {{
+        add("KingJames");
+        add("kobebryant");
+        add("kdtrey5");
+        add("Chris_Broussard");
+        add("NikeBasketball");
+        add("uabasketball");
+        add("stephenasmith");
+        add("RealSkipBayless");
+    }};
+
+    ArrayList<String> culturelistt = new ArrayList<String>() {{
+        add("nicekicks");
+    }};
+
+    ArrayList<String> comedylistt = new ArrayList<String>() {{
+        add("desusnice");
+        add("dahoodvines");
+        add("lilduval");
+    }};
+
+    ArrayList<String> artlistt = new ArrayList<String>() {{
+        add("Streetartnews");
+        add("History_Pics");
+    }};
+
+    ArrayList<String> musiclisti = new ArrayList<String>() {{
+        add("14455831");
+        add("6720655");
+        add("546693819");
+        add("18900337");
+        add("6720655");
+        add("266319242");
+        add("10685362");
+    }};
+
+    ArrayList<String> sportlisti = new ArrayList<String>() {{
+        add("16264572");
+        add("19410587");
+        add("13864937");
+    }};
+
+    ArrayList<String> culturelisti = new ArrayList<String>() {{
+        add("6380930");
+        add("174247675");
+        add("12281817");
+        add("185087057");
+        add("28011380");
+    }};
+
+    ArrayList<String> comedylisti = new ArrayList<String>() {{
+        add("atown0705");
+        add("BdotAdot5");
+        add("kevinhart4real");
+        add("dormtainment");
+    }};
+
+    ArrayList<String> artlisti = new ArrayList<String>() {{
+        add("theo.skudra");
+        add("vanstyles");
+        add("thecamkirk");
+        add("natgeo");
+    }};
 }
