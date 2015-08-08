@@ -200,13 +200,15 @@ public class MyStuffFragment extends Fragment{
                 int counter1 = 0;
                 for(List<String> individualList : allTwitterUsers){
                     for(String individualId : individualList){
-                        List<twitter4j.Status> statusesMeek = twitter.getUserTimeline("Pitchfork", paging);
+                        List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
                         for(twitter4j.Status st : statusesMeek){
                             BandoPost bp = new BandoPost();
                             bp.setPostUrl(st.getSource());
                             bp.setPostSourceSite(st.getSource());
                             bp.setPostText(st.getText());
                             bp.setPostType("twitter");
+                            bp.setUsername("@" + st.getUser().getScreenName());
+                            bp.setUserProfilePic(st.getUser().getOriginalProfileImageURL());
                             bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
                             bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
                             bp.setDateTime(st.getCreatedAt());
@@ -318,7 +320,7 @@ public class MyStuffFragment extends Fragment{
                     Picasso.with(getActivity()).load(item.getImageUrl()).into(feedImageView);
                     feedImageView.setVisibility(View.VISIBLE);
                 }
-                Picasso.with(getActivity()).load(item.getImageUrl()).into(profilePic);
+                Picasso.with(getActivity()).load(item.getUserProfilePic()).into(profilePic);
             } else {
                 feedImageView.setVisibility(View.GONE);
             }
@@ -362,45 +364,52 @@ public class MyStuffFragment extends Fragment{
 
                 e.printStackTrace();
             }
-
-            return jsonArr.length();
+            if(jsonArr!=null)
+                return jsonArr.length();
+            else
+                return null;
         }
 
         protected void onPostExecute(Integer result) {
             try {
-                for (int i = 0; i < jsonArr.length() && i <3; i++) {
-                    String theusername = jsonArr.getJSONObject(i).getJSONObject("user").getString("username");
-                    String thestandardImageUrl = jsonArr.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("text");
-                    String link = jsonArr.getJSONObject(i).getString("link");
-                    String profilePic = jsonArr.getJSONObject(i).getJSONObject("user").getString("profile_picture");
+                if(jsonArr!=null) {
+                    for (int i = 0; i < jsonArr.length() && i < 3; i++) {
+                        String theusername = "@"+jsonArr.getJSONObject(i).getJSONObject("user").getString("username");
+                        String thestandardImageUrl = jsonArr.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution").getString("url");
+                        String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("text");
+                        String link = jsonArr.getJSONObject(i).getString("link");
+                        String profilePic = jsonArr.getJSONObject(i).getJSONObject("user").getString("profile_picture");
 
-                    BandoPost bp = new BandoPost();
-                    bp.setPostUrl(link);
-                    bp.setPostSourceSite("instagram");
-                    bp.setPostText(caption);
-                    bp.setPostType("instagram");
-                    bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))).getTime(), getActivity()));
-                    bp.setImageUrl(thestandardImageUrl);
-                    bp.setDateTime(new Date((long) Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))*1000));
-                    if(!bandoArray.contains(bp))
-                        bandoArray.add(bp);
-                }
-                Collections.sort(bandoArray);
-                if(asyncsLoading.size()>0)
-                    asyncsLoading.set(pos, new Boolean(false));
-                ArrayList<Boolean> localCopyOfInstagramTasksLoading = asyncsLoading;
-
-                boolean downloadIGDone = true;
-                for (Boolean currentCircle: localCopyOfInstagramTasksLoading) {
-                    if(currentCircle==true){
-                        Log.v("benmark", "not done yet ");
-                        downloadIGDone = false;
+                        BandoPost bp = new BandoPost();
+                        bp.setPostUrl(link);
+                        bp.setUsername(theusername);
+                        bp.setPostSourceSite("instagram");
+                        bp.setPostText(caption);
+                        bp.setPostType("instagram");
+                        bp.setUserProfilePic(profilePic);
+                        bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))).getTime(), getActivity()));
+                        bp.setImageUrl(thestandardImageUrl);
+                        bp.setDateTime(new Date((long) Long.parseLong(jsonArr.getJSONObject(i).getString("created_time")) * 1000));
+                        if (!bandoArray.contains(bp))
+                            bandoArray.add(bp);
                     }
-                };
-                if(!gettingTwit && downloadIGDone){
-                    Log.v("benmark", "downloadIGDone ");
-                    gettingTwit = true;
+                    Collections.sort(bandoArray);
+                    if (asyncsLoading.size() > 0)
+                        asyncsLoading.set(pos, new Boolean(false));
+                    ArrayList<Boolean> localCopyOfInstagramTasksLoading = asyncsLoading;
+                    boolean downloadIGDone = true;
+                    for (Boolean currentCircle: localCopyOfInstagramTasksLoading) {
+                        if(currentCircle==true){
+                            Log.v("benmark", "not done yet ");
+                            downloadIGDone = false;
+                        }
+                    };
+                    if(!gettingTwit && downloadIGDone){
+                        Log.v("benmark", "downloadIGDone ");
+                        gettingTwit = true;
+                        new DownloadTask().execute();
+                    }
+                }else{
                     new DownloadTask().execute();
                 }
             } catch (JSONException e) {
