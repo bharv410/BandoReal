@@ -26,10 +26,10 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/button"
 			android:text="Share"
-			android:layout_alignParentTop="true"
 			android:onClick="share"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"/>
+			android:layout_alignParentTop="true"
+			android:layout_toLeftOf="@+id/imageView"
+			android:layout_toStartOf="@+id/imageView"/>
 
 		<ImageButton
 			android:layout_width="wrap_content"
@@ -45,6 +45,25 @@
 			android:adjustViewBounds="true"
 			android:layout_alignParentEnd="true"
 			android:layout_alignParentBottom="true"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="33"
+			android:paddingLeft="@dimen/feed_item_margin"
+			android:gravity="center"
+			android:id="@+id/viewCountTextView"
+			android:layout_alignBottom="@+id/button"
+			android:layout_alignParentTop="true"/>
+
+		<ImageView
+			android:layout_width="20dp"
+			android:layout_height="20dp"
+			android:id="@+id/imageView2"
+			android:src="@drawable/viewim"
+			android:layout_toRightOf="@+id/viewCountTextView"
+			android:layout_alignBottom="@+id/viewCountTextView"
+			android:layout_alignParentTop="true"/>
 
 	</RelativeLayout>
 

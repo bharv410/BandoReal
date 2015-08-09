@@ -18,6 +18,8 @@ public class BandoPost implements Comparable<BandoPost>{
     private boolean postHasImage;
     private Date dateTime;
 
+    private int viewCOunt;
+
     public BandoPost(){
 
     }
@@ -115,6 +117,14 @@ public class BandoPost implements Comparable<BandoPost>{
 
     public String getDateString(){
         return dateString;
+    }
+
+    public int getViewCOunt() {
+        return viewCOunt;
+    }
+
+    public void setViewCOunt(int viewCOunt) {
+        this.viewCOunt = viewCOunt;
     }
 
     public void setDateString(String dateString) {

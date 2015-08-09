@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -14,13 +13,11 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,7 +25,6 @@ import android.widget.Toast;
 import android.os.Handler;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -40,16 +36,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import classes.BandoPost;
 import classes.CustomTypefaceSpan;
 
 
 public class ArticleDetailActivity extends ActionBarActivity {
     String imagePath, text;
-    TextView articleTitleTextView;
+    TextView articleTitleTextView, viewCountTV;
     ProgressBar pb5;
 
     ImageView imv;
@@ -62,6 +56,10 @@ public class ArticleDetailActivity extends ActionBarActivity {
         pb5 = (ProgressBar)findViewById(R.id.progressBar5);
 
         mWebview  = (WebView)findViewById(R.id.webView);
+        viewCountTV = (TextView)findViewById(R.id.viewCountTextView);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/ptsansb.ttf");
+        viewCountTV.setTypeface(custom_font);
+        viewCountTV.setText(String.valueOf(getIntent().getIntExtra("viewCount", 33)));
 
         mWebview.getSettings().setJavaScriptEnabled(true); // enable javascript
 
@@ -76,10 +74,10 @@ public class ArticleDetailActivity extends ActionBarActivity {
         mWebview .loadUrl(getIntent().getStringExtra("postLink"));
 
         final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
 
         SpannableString s = new SpannableString("Bando");
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/ptsansb.ttf");
 
         s.setSpan(new CustomTypefaceSpan(custom_font), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -92,7 +90,8 @@ public class ArticleDetailActivity extends ActionBarActivity {
                 pb5.setVisibility(View.GONE);
             }
         }, 1000);
-
+        text = getIntent().getStringExtra("text");
+        updateCount();
 
 //
 //        imagePath = getIntent().getStringExtra("imagePath");
@@ -134,7 +133,8 @@ public class ArticleDetailActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
+        }else
+            finish();
 
         return super.onOptionsItemSelected(item);
     }
@@ -183,7 +183,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
                     String[] getRidOfTheEnd = partAfterOGImage.split("/><m");
 
                     String theLinkSHouldBe = getRidOfTheEnd[0].split("\"")[1];
-                    updateParseOgImage(theLinkSHouldBe);
+                    //updateCount(theLinkSHouldBe);
 
                     Picasso.with(getApplicationContext()).load(theLinkSHouldBe).into(imv);
                 }
@@ -206,7 +206,7 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
-    private void updateParseOgImage(final String ogUrl){
+    private void updateCount(){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.whereEqualTo("postText", text);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -214,12 +214,31 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
                     for (ParseObject po : list) {
-                        if (po.getString("imageUrl").contains("og:image")) {
-                            po.put("imageUrl", ogUrl);
+                        po.put("viewCount", (int)po.get("viewCount")+1);
                             po.saveInBackground();
-                            Log.v("benmark", "updated " + text + "\n tourl" + ogUrl);
-                        }
+                            Log.v("benmark", "updated " + text + "\n tourl");
+                        if(viewCountTV!=null)
+                            viewCountTV.setText(String.valueOf((int)po.get("viewCount")+1));
                     }
+                }
+            }
+        });
+    }
+
+    private void updateViewCount(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
+        query.whereEqualTo("postText", text);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null) {
+                    for (ParseObject po : list) {
+                            po.put("viewCount", (int)po.get("viewCount")+1);
+                            po.saveInBackground();
+                            Log.v("benmark", "updated " + text + "\n touvl" + po.get("viewCount"));
+                    }
+                } else {
+                    Log.v("benmark", String.valueOf(e.getCode()));
                 }
             }
         });

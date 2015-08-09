@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -76,20 +77,23 @@ public class MyStuffFragment extends Fragment{
     private final String client_secret = "424a0cc8965a4f7da7c73897fb90b810";
     private final String callback_url = "http://phantom.com";
 
+    long iGStarttime, iGEndTime;
+
     private InstagramApp mApp;
     private InstagramApp.OAuthAuthenticationListener listener;
-
     boolean gettingTwit = false;
 
     private ArrayList<BandoPost> bandoArray;
     private ObservableListView listView;
     private FeedListAdapter listAdapter;
 
-    private ArrayList<Boolean> asyncsLoading;
-
     public ActionBar mActionBar;
 
-    private ProgressBar progress;
+    private ProgressBar    pbHorizontal         = null;
+    private TextView       tvProgressHorizontal = null;
+
+    /* current progress on progress bars */
+    private int progress = 0;
 
     public MyStuffFragment() {
     }
@@ -111,55 +115,53 @@ public class MyStuffFragment extends Fragment{
         };
         mApp = new InstagramApp(getActivity(), client_id, client_secret, callback_url);
         mApp.setListener(listener);
-
-        progress = (ProgressBar)getActivity().findViewById(R.id.progressBar1);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
-        Boolean showMusic = preferences.getBoolean("MUSIC", false);
-        Boolean showSports = preferences.getBoolean("SPORTS",false);
-        Boolean showCulture = preferences.getBoolean("CULTURE",false);
-        Boolean showComedy = preferences.getBoolean("COMEDY",false);
+        pbHorizontal = (ProgressBar)getActivity().findViewById(R.id.pb_horizontal);
+        tvProgressHorizontal = (TextView)getActivity().findViewById(R.id.tv_progress_horizontal);
 
-        try{
-                bandoArray = new ArrayList<>();
-                asyncsLoading = new ArrayList<>();
-
-            List<List<String>> allInstagramUsers = new ArrayList<List<String>>(4);
-            if ((showMusic))
-                allInstagramUsers.add(musiclisti);
-            if(showSports)
-                allInstagramUsers.add(sportlisti);
-            if(showCulture)
-                allInstagramUsers.add(culturelisti);
-            if(showComedy)
-                allInstagramUsers.add(comedylisti);
-
-            int counter1 = 0;
-            for(List<String> individualList : allInstagramUsers){
-                for(String individualId : individualList){
-                    new GetInstagramImagesAsync(counter1).execute(new URL(INSTYPREFIX_URL + individualId+INSTSUFIX_URL+ client_id));
-                    counter1++;
-                }
+            if(bandoArray!=null){
+                listAdapter.notifyDataSetChanged();
+            }else{
+                pbHorizontal.setVisibility(View.VISIBLE);
+                tvProgressHorizontal.setVisibility(View.VISIBLE);
+                progress = 0;
+                postProgress(progress);
             }
-        }catch (MalformedURLException e){
-        }
+        bandoArray = new ArrayList<>();
+
+            List<URL> allIGUsers = new ArrayList<>();
+            if ((preferences.getBoolean("MUSIC", true)))
+                allIGUsers.addAll(musiclisti);
+            if(preferences.getBoolean("SPORTS",false))
+                allIGUsers.addAll(sportlisti);
+            if(preferences.getBoolean("CULTURE",false))
+                allIGUsers.addAll(culturelisti);
+            if(preferences.getBoolean("COMEDY",false))
+                allIGUsers.addAll(comedylisti);
+            if(preferences.getBoolean("PHOTOS & ART",false))
+                allIGUsers.addAll(artlisti);
+
+            iGStarttime = System.nanoTime();
+        new GetInstagramImagesAsync().execute(allIGUsers);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
-        //startActivity(new Intent(getActivity(), LoadingScreen.class));
         return rootView;
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String> {
+        long startTime, endTime;
 
         public DownloadTask(){
+            startTime = System.nanoTime();
         }
         @Override
         protected String doInBackground(String... urls) {
@@ -182,41 +184,40 @@ public class MyStuffFragment extends Fragment{
 //First param of Paging() is the page number, second is the number per page (this is capped around 200 I think.
             Paging paging = new Paging(1, 1);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
-            Boolean showMusic = preferences.getBoolean("MUSIC", false);
-            Boolean showSports = preferences.getBoolean("SPORTS",false);
-            Boolean showCulture = preferences.getBoolean("CULTURE", false);
-            Boolean showComedy = preferences.getBoolean("COMEDY",false);
             try {
-                List<List<String>> allTwitterUsers = new ArrayList<List<String>>(4);
-                if ((showMusic))
-                    allTwitterUsers.add(musiclistt);
-                if(showSports)
-                    allTwitterUsers.add(sportlistt);
-                if(showCulture)
-                    allTwitterUsers.add(culturelistt);
-                if(showComedy)
-                    allTwitterUsers.add(comedylistt);
+                List<String> allTwitterUsers = new ArrayList<String>();
+                if ((preferences.getBoolean("MUSIC", false)))
+                    allTwitterUsers.addAll(musiclistt);
+                if(preferences.getBoolean("SPORTS",false))
+                    allTwitterUsers.addAll(sportlistt);
+                if(preferences.getBoolean("CULTURE", false))
+                    allTwitterUsers.addAll(culturelistt);
+                if(preferences.getBoolean("COMEDY",false))
+                    allTwitterUsers.addAll(comedylistt);
 
-                int counter1 = 0;
-                for(List<String> individualList : allTwitterUsers){
-                    for(String individualId : individualList){
-                        List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
-                        for(twitter4j.Status st : statusesMeek){
+                    for(String individualId : allTwitterUsers) {
+                            List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
+                            twitter4j.Status firstStatus = statusesMeek.get(0);
                             BandoPost bp = new BandoPost();
-                            bp.setPostUrl(st.getSource());
-                            bp.setPostSourceSite(st.getSource());
-                            bp.setPostText(st.getText());
+                            bp.setPostUrl(firstStatus.getSource());
+                            bp.setPostSourceSite(firstStatus.getSource());
+                            bp.setPostText(firstStatus.getText());
                             bp.setPostType("twitter");
-                            bp.setUsername("@" + st.getUser().getScreenName());
-                            bp.setUserProfilePic(st.getUser().getOriginalProfileImageURL());
-                            bp.setDateString(Utils.getTimeAgo(st.getCreatedAt().getTime(), getActivity()));
-                            bp.setImageUrl(st.getUser().getBiggerProfileImageURL());
-                            bp.setDateTime(st.getCreatedAt());
-                            if(!bandoArray.contains(bp))
-                                bandoArray.add(bp);
-                        }
+                            if (firstStatus.getMediaEntities().length > 0) {
+                                bp.setPostHasImage(true);
+                                bp.setImageUrl(firstStatus.getMediaEntities()[0].getMediaURL());
+                            } else {
+                                bp.setPostHasImage(false);
+                            }
+
+                            bp.setUsername("@" + firstStatus.getUser().getScreenName());
+                            bp.setUserProfilePic(firstStatus.getUser().getOriginalProfileImageURL());
+                            bp.setDateString(Utils.getTimeAgo(firstStatus.getCreatedAt().getTime(), getActivity()));
+                            bp.setImageUrl(firstStatus.getUser().getBiggerProfileImageURL());
+                            bp.setDateTime(firstStatus.getCreatedAt());
+                            bandoArray.add(bp);
+                            Log.v("benmark", "added " + String.valueOf(bandoArray.size()));
                     }
-                }
             }catch (TwitterException tw){
 
             }
@@ -230,6 +231,10 @@ public class MyStuffFragment extends Fragment{
             Collections.sort(bandoArray);
             listView = (ObservableListView) getActivity().findViewById(R.id.list);
             listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, bandoArray);
+            endTime = System.nanoTime();
+            long duration = (endTime - startTime);
+            double seconds = (double)duration / 1000000000.0;
+            Log.v("benmark", "twitter took " + (seconds) + "senconds");
             listView.setAdapter(listAdapter);
             //listView.setScrollViewCallbacks((MainActivity)getActivity());
 
@@ -240,7 +245,8 @@ public class MyStuffFragment extends Fragment{
                     //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                 }
             });
-            progress.setVisibility(View.GONE);
+            tvProgressHorizontal.setVisibility(View.GONE);
+            pbHorizontal.setVisibility(View.GONE);
         }
     }
     private static class ViewHolder {
@@ -254,6 +260,7 @@ public class MyStuffFragment extends Fragment{
         private final List<BandoPost> bandoPosts;
 
         public FeedListAdapter(Activity activity, int resource, List<BandoPost> feedItems) {
+            //cutting to sublist
             super(activity, resource, feedItems);
             this.activity = activity;
             this.bandoPosts = feedItems;
@@ -294,6 +301,13 @@ public class MyStuffFragment extends Fragment{
                     .findViewById(R.id.profilePic);
             ImageView feedImageView = (ImageView) convertView
                     .findViewById(R.id.feedImage1);
+            ImageView socialmageView = (ImageView) convertView
+                    .findViewById(R.id.socialNetworkStamp);
+
+            if(getItem(position).getPostType().contains("instagram"))
+                Picasso.with(getActivity()).load(R.drawable.instagramlogo).into(socialmageView);
+            else
+                Picasso.with(getActivity()).load(R.drawable.twitterlogo).into(socialmageView);
 
             BandoPost item = getItem(position);
 
@@ -312,15 +326,13 @@ public class MyStuffFragment extends Fragment{
                 statusMsg.setVisibility(View.GONE);
             }
             // user profile pic
-            //profilePic.setImageUrl(item.getProfilePic(), imageLoader);
+            Picasso.with(getActivity()).load(item.getUserProfilePic()).into(profilePic);
+            feedImageView.setVisibility(View.VISIBLE);
 
             // Feed image
-            if (item.getImageUrl() != null) {
-                if(!item.getPostType().contains("twitter")) {
+            if (item.isPostHasImage()) {
                     Picasso.with(getActivity()).load(item.getImageUrl()).into(feedImageView);
                     feedImageView.setVisibility(View.VISIBLE);
-                }
-                Picasso.with(getActivity()).load(item.getUserProfilePic()).into(profilePic);
             } else {
                 feedImageView.setVisibility(View.GONE);
             }
@@ -330,91 +342,78 @@ public class MyStuffFragment extends Fragment{
 
     }
 
-    public class GetInstagramImagesAsync extends AsyncTask<URL, Void, Integer> {
-        private JSONArray jsonArr;
-        private int pos;
+    public class GetInstagramImagesAsync extends AsyncTask<List<URL>, Integer, List<JSONArray>> {
 
-        public GetInstagramImagesAsync (int position){
-            this.pos = position;
+        public GetInstagramImagesAsync (){
         }
 
-
-        protected Integer doInBackground(URL... urls) {
-            try{
-                if(asyncsLoading.size()>0)
-                asyncsLoading.add(pos,new Boolean(true));
-
-                URLConnection tc = urls[0].openConnection();
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        tc.getInputStream()));
-
-                String line;
-                while ((line = in.readLine()) != null) {
-                    JSONObject ob = new JSONObject(line);
-
-                    jsonArr = ob.getJSONArray("data");
-                }
-            } catch (MalformedURLException e) {
-
-                e.printStackTrace();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            } catch (JSONException e) {
-
-                e.printStackTrace();
-            }
-            if(jsonArr!=null)
-                return jsonArr.length();
-            else
-                return null;
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Log.v("benmark", "onProgressUpdate = " + String.valueOf(values[0]));
+            super.onProgressUpdate(values);
+            postProgress(values[0]);
         }
 
-        protected void onPostExecute(Integer result) {
-            try {
-                if(jsonArr!=null) {
-                    for (int i = 0; i < jsonArr.length() && i < 3; i++) {
-                        String theusername = "@"+jsonArr.getJSONObject(i).getJSONObject("user").getString("username");
-                        String thestandardImageUrl = jsonArr.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-                        String caption = jsonArr.getJSONObject(i).getJSONObject("caption").getString("text");
-                        String link = jsonArr.getJSONObject(i).getString("link");
-                        String profilePic = jsonArr.getJSONObject(i).getJSONObject("user").getString("profile_picture");
+        protected List<JSONArray> doInBackground(List<URL>... urls) {
+            ArrayList <JSONArray> listOfIGUsersTimelines = new ArrayList<JSONArray>();
+            int cur =3;
+            for(URL currentUrl : urls[0]) {
+                    try {
+                        URLConnection tc = currentUrl.openConnection();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(
+                                tc.getInputStream()));
 
-                        BandoPost bp = new BandoPost();
-                        bp.setPostUrl(link);
-                        bp.setUsername(theusername);
-                        bp.setPostSourceSite("instagram");
-                        bp.setPostText(caption);
-                        bp.setPostType("instagram");
-                        bp.setUserProfilePic(profilePic);
-                        bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(jsonArr.getJSONObject(i).getString("created_time"))).getTime(), getActivity()));
-                        bp.setImageUrl(thestandardImageUrl);
-                        bp.setDateTime(new Date((long) Long.parseLong(jsonArr.getJSONObject(i).getString("created_time")) * 1000));
-                        if (!bandoArray.contains(bp))
-                            bandoArray.add(bp);
-                    }
-                    Collections.sort(bandoArray);
-                    if (asyncsLoading.size() > 0)
-                        asyncsLoading.set(pos, new Boolean(false));
-                    ArrayList<Boolean> localCopyOfInstagramTasksLoading = asyncsLoading;
-                    boolean downloadIGDone = true;
-                    for (Boolean currentCircle: localCopyOfInstagramTasksLoading) {
-                        if(currentCircle==true){
-                            Log.v("benmark", "not done yet ");
-                            downloadIGDone = false;
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            JSONObject ob = new JSONObject(line);
+                            listOfIGUsersTimelines.add(ob.getJSONArray("data"));
+                            for(JSONArray js : listOfIGUsersTimelines){
+                                cur++;
+                                publishProgress(4*cur);
+                                String theusername = "@"+js.getJSONObject(0).getJSONObject("user").getString("username");
+                                String thestandardImageUrl = js.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
+                                String caption = js.getJSONObject(0).getJSONObject("caption").getString("text");
+                                String link = js.getJSONObject(0).getString("link");
+                                String profilePic = js.getJSONObject(0).getJSONObject("user").getString("profile_picture");
+
+                                BandoPost bp = new BandoPost();
+                                bp.setPostUrl(link);
+                                bp.setUsername(theusername);
+                                bp.setPostSourceSite("instagram");
+                                bp.setPostText(caption);
+                                bp.setPostType("instagram");
+                                bp.setPostHasImage(true);
+                                bp.setUserProfilePic(profilePic);
+                                bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(js.getJSONObject(0).getString("created_time"))).getTime(), getActivity()));
+                                bp.setImageUrl(thestandardImageUrl);
+                                bp.setDateTime(new Date((long) Long.parseLong(js.getJSONObject(0).getString("created_time")) * 1000));
+                                bandoArray.add(bp);
+                                Log.v("benmark", "added " + String.valueOf(bandoArray.size()));
+                            }
                         }
-                    };
-                    if(!gettingTwit && downloadIGDone){
-                        Log.v("benmark", "downloadIGDone ");
-                        gettingTwit = true;
-                        new DownloadTask().execute();
+                    } catch (MalformedURLException e) {
+
+                        e.printStackTrace();
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+
+                        e.printStackTrace();
                     }
-                }else{
+            }
+            return  listOfIGUsersTimelines;
+        }
+
+        protected void onPostExecute(List<JSONArray> igTimelines) {
+                if(igTimelines.size()>0) {
+                    Collections.sort(bandoArray);
+                    iGEndTime = System.nanoTime();
+                    long duration = (iGEndTime - iGStarttime);
+                    double seconds = (double)duration / 1000000000.0;
+                    Log.v("benmark", "instagram took " + (seconds) + "senconds");
                     new DownloadTask().execute();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -453,41 +452,67 @@ public class MyStuffFragment extends Fragment{
         add("History_Pics");
     }};
 
-    ArrayList<String> musiclisti = new ArrayList<String>() {{
-        add("14455831");
-        add("6720655");
-        add("546693819");
-        add("18900337");
-        add("6720655");
-        add("266319242");
-        add("10685362");
+    ArrayList<URL> musiclisti = new ArrayList<URL>() {{
+        try{
+        add(new URL(INSTYPREFIX_URL + "14455831"+INSTSUFIX_URL+ client_id));
+        add(new URL(INSTYPREFIX_URL + "6720655"+INSTSUFIX_URL+ client_id));
+        add(new URL(INSTYPREFIX_URL + "25945306"+INSTSUFIX_URL+ client_id));
+        add(new URL(INSTYPREFIX_URL + "18900337"+INSTSUFIX_URL+ client_id));
+        add(new URL(INSTYPREFIX_URL + "266319242"+INSTSUFIX_URL+ client_id));
+        add(new URL(INSTYPREFIX_URL + "10685362"+INSTSUFIX_URL+ client_id));
+        }catch (MalformedURLException e){
+        }
     }};
 
-    ArrayList<String> sportlisti = new ArrayList<String>() {{
-        add("16264572");
-        add("19410587");
-        add("13864937");
+    ArrayList<URL> sportlisti = new ArrayList<URL>() {{
+        try{
+            add(new URL(INSTYPREFIX_URL + "16264572"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "19410587"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "13864937"+INSTSUFIX_URL+ client_id));
+        }catch (MalformedURLException e){
+        }
     }};
 
-    ArrayList<String> culturelisti = new ArrayList<String>() {{
-        add("6380930");
-        add("174247675");
-        add("12281817");
-        add("185087057");
-        add("28011380");
+    ArrayList<URL> culturelisti = new ArrayList<URL>() {{
+        try{
+            add(new URL(INSTYPREFIX_URL + "6380930"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "174247675"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "12281817"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "185087057"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "28011380"+INSTSUFIX_URL+ client_id));
+        }catch (MalformedURLException e){
+        }
     }};
 
-    ArrayList<String> comedylisti = new ArrayList<String>() {{
-        add("atown0705");
-        add("BdotAdot5");
-        add("kevinhart4real");
-        add("dormtainment");
+    ArrayList<URL> comedylisti = new ArrayList<URL>() {{
+        try{
+            add(new URL(INSTYPREFIX_URL + "1535836050"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "10245461"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "6590609"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "15209885"+INSTSUFIX_URL+ client_id));
+        }catch (MalformedURLException e){
+        }
     }};
 
-    ArrayList<String> artlisti = new ArrayList<String>() {{
-        add("theo.skudra");
-        add("vanstyles");
-        add("thecamkirk");
-        add("natgeo");
+    ArrayList<URL> artlisti = new ArrayList<URL>() {{
+        try{
+            add(new URL(INSTYPREFIX_URL + "143795932"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "176915912"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "13613836"+INSTSUFIX_URL+ client_id));
+            add(new URL(INSTYPREFIX_URL + "787132"+INSTSUFIX_URL+ client_id));
+        }catch (MalformedURLException e){
+        }
     }};
+
+    private void postProgress(int progress) {
+                      String strProgress = String.valueOf(progress) + " %";
+                     pbHorizontal.setProgress(progress);
+                    /* update secondary progress of horizontal progress bar */
+                     if(progress == 0) {
+                             pbHorizontal.setSecondaryProgress(0);
+                       } else {
+                           pbHorizontal.setSecondaryProgress(progress + 5);
+                     }
+                      tvProgressHorizontal.setText(strProgress);
+    }
 }

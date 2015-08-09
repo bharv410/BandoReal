@@ -2,11 +2,9 @@ package com.kigeniushq.bandofinal;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.FeatureGroupInfo;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -15,40 +13,29 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
-import classes.CustomGridViewWithHeader;
+import classes.CustomGrid;
 import classes.Utils;
-import in.srain.cube.views.GridViewWithHeaderAndFooter;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 
 /**
  * Created by benjamin.harvey on 8/4/15.
@@ -85,10 +72,10 @@ public class FeauteredFragment extends Fragment{
         }
         mstyled.recycle();
 
-        getHotNewHipHop();
+        getVerifiedPosts();
     }
 
-    private void getHotNewHipHop(){
+    private void getVerifiedPosts(){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addDescendingOrder("createdAt");
         query.setLimit(12);
@@ -105,6 +92,8 @@ public class FeauteredFragment extends Fragment{
                         bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
                         bp.setDateTime(po.getCreatedAt());
                         bp.setImageUrl(po.getString("imageUrl"));
+                        bp.setUniqueId(po.getObjectId());
+                        bp.setViewCOunt(po.getInt("viewCount"));
                         bandoArray.add(bp);
                     }
                     Collections.sort(bandoArray);
@@ -114,7 +103,7 @@ public class FeauteredFragment extends Fragment{
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
                     setHeader(headerView);
                     grid.setAdapter(adapter);
-                    grid.setScrollViewCallbacks((MainActivity)getActivity());
+                    grid.setScrollViewCallbacks((MainActivity) getActivity());
                     grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
@@ -123,37 +112,6 @@ public class FeauteredFragment extends Fragment{
                         }
                     });
                     pb.setVisibility(View.GONE);
-                } else {
-                    Log.v("benmark", "code = " + String.valueOf(e.getCode()));
-                }
-            }
-        });
-    }
-
-    private void getInstagram(){
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoPost");
-        query.addAscendingOrder("createdAt");
-        query.setLimit(12);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    bandoArray = new ArrayList<BandoPost>();
-                    int position = -1;
-                    for (ParseObject po : objects) {
-                        position++;
-                        BandoPost bp = new BandoPost();
-                        if (po.getString("siteType").contains("instagram")) {
-                            bp.setPostText(po.getString("captionText"));
-                            bp.setImageUrl(po.getString("imageUrl"));
-                            bp.setPostUrl(po.getString("link"));
-                            bp.setUniqueId(po.getString("postUniqueId"));
-                            bp.setPostType(po.getString("instagram"));
-                            bp.setUsername(po.getString("username"));
-                            bp.setUserProfilePic(po.getString("userProfilePic"));
-                        }
-                        bandoArray.add(bp);
-                    }
-                    Log.v("benmark", "bando size = " + String.valueOf(bandoArray.size()));
                 } else {
                     Log.v("benmark", "code = " + String.valueOf(e.getCode()));
                 }
@@ -181,25 +139,27 @@ if(!isFeaturedHeaderSet) {
 
                 TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
-                if(featuredText!=null)
+                if(featuredText!=null) {
                     featuredText.setTypeface(custom_font);
+                    featuredText.setText(objects.get(0).getString("text"));
 
-                featuredText.setText(objects.get(0).getString("text"));
+                    final String postLink = objects.get(0).getString("postLink");
+                    final String text = objects.get(0).getString("text");
+                    final String imagePath = objects.get(0).getString("imageUrl");
+                    final String objectid = objects.get(0).getObjectId();
+                    v.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //updateViewCount(objectid);
+                            Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                            browserIntent.putExtra("postLink", postLink);
+                            browserIntent.putExtra("imagePath", imagePath);
+                            browserIntent.putExtra("text", text);
+                            startActivity(browserIntent);
 
-                final String postLink = objects.get(0).getString("postLink");
-                final String text = objects.get(0).getString("text");
-                final String imagePath = objects.get(0).getString("imageUrl");
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
-                        browserIntent.putExtra("postLink", postLink);
-                        browserIntent.putExtra("imagePath", imagePath);
-                        browserIntent.putExtra("text", text);
-                        startActivity(browserIntent);
-
-                    }
-                });
+                        }
+                    });
+                }
             } else {
                 Log.v("benmark", "code = " + String.valueOf(e.getCode()));
             }
@@ -212,7 +172,6 @@ if(!isFeaturedHeaderSet) {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_featured, container, false);
-        //startActivity(new Intent(getActivity(), LoadingScreen.class));
         return rootView;
     }
 
@@ -251,7 +210,6 @@ if(!isFeaturedHeaderSet) {
             // TODO Auto-generated method stub
              ViewHolder holder;
             View grid;
-
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -270,6 +228,7 @@ if(!isFeaturedHeaderSet) {
                 final String postLink = getItem(position).getPostUrl();
                 final String text = getItem(position).getPostText();
                 final String imagePath = getItem(position).getImageUrl();
+                final int viewCOunt = getItem(position).getViewCOunt();
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -277,6 +236,7 @@ if(!isFeaturedHeaderSet) {
                         browserIntent.putExtra("postLink", postLink);
                         browserIntent.putExtra("imagePath", imagePath);
                         browserIntent.putExtra("text", text);
+                        browserIntent.putExtra("viewCount", viewCOunt);
                         startActivity(browserIntent);
 
                     }
@@ -286,79 +246,30 @@ if(!isFeaturedHeaderSet) {
                 if(!siteType.contains("article"))
                     socialTextView.setText(siteType);
 
-                textView.setText(bandoPosts.get(position).getPostText());
+                String postText = bandoPosts.get(position).getPostText();
 
-                if(getItem(position).getImageUrl().contains("og:image")){
-                    holder = new ViewHolder();
-                    holder.thumbnail = imageView;
-                    holder.position = position;
-                    new DownloadTask(imageView, getContext(), holder, holder.position).execute(getItem(position).getPostUrl());
-                }else {
+                textView.setText(truncateAfteWords(9,postText));
+
                     Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl())
                             .placeholder(R.drawable.progress_animation)
                             .into(imageView);
-                }
-
-
             } else {
                 grid = (View) convertView;
             }
 
             return grid;
         }
-    }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-        private ImageView imv;
-        private Context context;
-        private int mPosition;
-        private ViewHolder mHolder;
-
-        public DownloadTask(ImageView imv, Context ctx, ViewHolder holder, int position){
-            this.imv = imv;
-            this.context = ctx;
-            this.mHolder = holder;
-            this.mPosition = position;
-        }
-        @Override
-        protected String doInBackground(String... urls) {
-            HttpResponse response = null;
-            HttpGet httpGet = null;
-            HttpClient mHttpClient = null;
-            String s = "";
-
-            try {
-                if(mHttpClient == null){
-                    mHttpClient = new DefaultHttpClient();
-                }
-
-
-                httpGet = new HttpGet(urls[0]);
-
-
-                response = mHttpClient.execute(httpGet);
-                s = EntityUtils.toString(response.getEntity(), "UTF-8");
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String result){
-            if (mHolder.position == mPosition) {
-                if(result.contains("og:image")){
-                    String[] parts = result.split("\"og:image\"");
-
-                    String partAfterOGImage = parts[1];
-                    String[] getRidOfTheEnd = partAfterOGImage.split("/><m");
-
-                    String theLinkSHouldBe = getRidOfTheEnd[0].split("\"")[1];
-                    Picasso.with(getActivity()).load(theLinkSHouldBe).into(imv);
-                }
-            }
+        private String truncateAfteWords(int n, String s) {
+            Pattern WB_PATTERN = Pattern.compile("(?<=\\w)\\b");
+            if (s == null) return null;
+            if (n <= 0) return "";
+            Matcher m = WB_PATTERN.matcher(s);
+            for (int i=0; i<n && m.find(); i++);
+            if (m.hitEnd())
+                return s;
+            else
+                return s.substring(0, m.end());
         }
     }
     private static class ViewHolder {

@@ -1,5 +1,6 @@
 package com.kigeniushq.bandofinal.editprefences;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
@@ -31,6 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 
 import com.kigeniushq.bandofinal.R;
+import com.kigeniushq.bandofinal.SettingsActivity;
 
 import java.util.ArrayList;
 
@@ -81,8 +83,10 @@ public void onCreate(Bundle savedInstanceState) {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

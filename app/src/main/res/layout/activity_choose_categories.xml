@@ -6,7 +6,7 @@
 
 	<TextView android:layout_width="fill_parent"
 			  android:layout_height="wrap_content" android:padding="10dp"
-			  android:text="Choose People To Follow" android:textSize="20sp" />
+			  android:text="Choose Categories" android:textSize="20sp" />
 
 
 	<Button

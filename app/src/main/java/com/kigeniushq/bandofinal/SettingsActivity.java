@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -19,6 +21,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -38,7 +41,7 @@ import classes.TwitterLogin;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
     private final String client_id = "49fcbbb3abe9448798d8849806da6cd4";
     private final String client_secret = "424a0cc8965a4f7da7c73897fb90b810";
     private final String callback_url = "http://phantom.com";
@@ -48,6 +51,7 @@ public class SettingsActivity extends PreferenceActivity {
     private InstagramApp.OAuthAuthenticationListener listener;
 
     CheckBoxPreference twitPref,igPref;
+    Preference about;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -67,7 +71,17 @@ public class SettingsActivity extends PreferenceActivity {
         mApp.setListener(listener);
 
         setupSimplePreferencesScreen();
+
     }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
 
     private void setupSimplePreferencesScreen() {
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -79,7 +93,8 @@ public class SettingsActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.pref_general);
 
-        twitPref = (CheckBoxPreference) findPreference("twit_checkbox");
+
+                twitPref = (CheckBoxPreference) findPreference("twit_checkbox");
         twitPref.setChecked(TwitterLogin.getTwitterLoginCheck());
         twitPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -109,6 +124,26 @@ public class SettingsActivity extends PreferenceActivity {
 
         igPref.setIcon(R.drawable.instagramlogo);
 
+        Preference prefereces=findPreference("info");
+        prefereces.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName()));
+                startActivity(intent);
+                return false;
+            }
+        });
+
+        Preference prefereces2=findPreference("share");
+        prefereces2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "I just found out about Bando. You have to check it out! Bandotheapp.com");
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -186,10 +221,27 @@ public class SettingsActivity extends PreferenceActivity {
     public void onResume(){
         super.onResume();
         refresh();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
-
     private void refresh(){
         twitPref.setChecked(TwitterLogin.getTwitterLoginCheck());
         igPref.setChecked(mApp.hasAccessToken());
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        switch (key) {
+            case "pref_key_auto_delete":
+                boolean notificationStatus = SP.getBoolean(key, false);
+                Log.d("stat", String.valueOf(notificationStatus));
+                break;
+
+            case "pref_key_notification_list":
+                String downloadType = SP.getString(key, "n/a");
+                Log.d("stat", String.valueOf(downloadType));
+                break;
+        }
     }
 }

@@ -42,19 +42,12 @@
         <Preference
             android:title="About"
             android:key="info">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="market://details?id=com.kidgeniushq.bandofinal"
-                />
         </Preference>
+
 
         <Preference
             android:title="Share"
-            android:key="info">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="market://details?id=com.kidgeniushq.bandofinal"
-                />
+            android:key="share">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
