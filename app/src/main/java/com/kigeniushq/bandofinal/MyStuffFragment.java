@@ -94,6 +94,7 @@ public class MyStuffFragment extends Fragment{
 
     /* current progress on progress bars */
     private int progress = 0;
+    private int totalForProg = 0;
 
     public MyStuffFragment() {
     }
@@ -129,8 +130,6 @@ public class MyStuffFragment extends Fragment{
             }else{
                 pbHorizontal.setVisibility(View.VISIBLE);
                 tvProgressHorizontal.setVisibility(View.VISIBLE);
-                progress = 0;
-                postProgress(progress);
             }
         bandoArray = new ArrayList<>();
 
@@ -157,11 +156,18 @@ public class MyStuffFragment extends Fragment{
         return rootView;
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    private class DownloadTask extends AsyncTask<String, Integer, String> {
         long startTime, endTime;
 
         public DownloadTask(){
             startTime = System.nanoTime();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Log.v("benmark", "onProgressUpdate = " + String.valueOf(values[0]));
+            super.onProgressUpdate(values);
+            postProgress();
         }
         @Override
         protected String doInBackground(String... urls) {
@@ -194,8 +200,10 @@ public class MyStuffFragment extends Fragment{
                     allTwitterUsers.addAll(culturelistt);
                 if(preferences.getBoolean("COMEDY",false))
                     allTwitterUsers.addAll(comedylistt);
-
+                totalForProg = totalForProg +allTwitterUsers.size();
                     for(String individualId : allTwitterUsers) {
+                        progress++;
+                        publishProgress(progress);
                             List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
                             twitter4j.Status firstStatus = statusesMeek.get(0);
                             BandoPost bp = new BandoPost();
@@ -215,8 +223,8 @@ public class MyStuffFragment extends Fragment{
                             bp.setDateString(Utils.getTimeAgo(firstStatus.getCreatedAt().getTime(), getActivity()));
                             bp.setImageUrl(firstStatus.getUser().getBiggerProfileImageURL());
                             bp.setDateTime(firstStatus.getCreatedAt());
+                        if(!bandoArray.contains(bp))
                             bandoArray.add(bp);
-                            Log.v("benmark", "added " + String.valueOf(bandoArray.size()));
                     }
             }catch (TwitterException tw){
 
@@ -349,14 +357,12 @@ public class MyStuffFragment extends Fragment{
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Log.v("benmark", "onProgressUpdate = " + String.valueOf(values[0]));
             super.onProgressUpdate(values);
-            postProgress(values[0]);
+            postProgress();
         }
 
         protected List<JSONArray> doInBackground(List<URL>... urls) {
             ArrayList <JSONArray> listOfIGUsersTimelines = new ArrayList<JSONArray>();
-            int cur =3;
             for(URL currentUrl : urls[0]) {
                     try {
                         URLConnection tc = currentUrl.openConnection();
@@ -366,30 +372,40 @@ public class MyStuffFragment extends Fragment{
                         String line;
                         while ((line = in.readLine()) != null) {
                             JSONObject ob = new JSONObject(line);
-                            listOfIGUsersTimelines.add(ob.getJSONArray("data"));
-                            for(JSONArray js : listOfIGUsersTimelines){
-                                cur++;
-                                publishProgress(4*cur);
-                                String theusername = "@"+js.getJSONObject(0).getJSONObject("user").getString("username");
-                                String thestandardImageUrl = js.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-                                String caption = js.getJSONObject(0).getJSONObject("caption").getString("text");
-                                String link = js.getJSONObject(0).getString("link");
-                                String profilePic = js.getJSONObject(0).getJSONObject("user").getString("profile_picture");
+                            if(!listOfIGUsersTimelines.contains(ob.getJSONArray("data")))
+                                listOfIGUsersTimelines.add(ob.getJSONArray("data"));
+                        }
+                        totalForProg = 50;
+                        for(JSONArray js : listOfIGUsersTimelines){
+                            if(progress>60)
+                                progress=30;
+                            publishProgress(progress);
+                            String theusername = "@"+js.getJSONObject(0).getJSONObject("user").getString("username");
+                            String thestandardImageUrl = js.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
 
-                                BandoPost bp = new BandoPost();
-                                bp.setPostUrl(link);
-                                bp.setUsername(theusername);
-                                bp.setPostSourceSite("instagram");
-                                bp.setPostText(caption);
+
+                            String link = js.getJSONObject(0).getString("link");
+                            String profilePic = js.getJSONObject(0).getJSONObject("user").getString("profile_picture");
+
+                            BandoPost bp = new BandoPost();
+                            bp.setPostUrl(link);
+                            bp.setUsername(theusername);
+                            bp.setPostSourceSite("instagram");
+                                if(js.getJSONObject(0).has("caption")&&!js.getJSONObject(0).isNull("caption")) {
+                                    bp.setPostText(js.getJSONObject(0).getJSONObject("caption").getString("text"));
+                                }else{
+                                    bp.setPostText("(No caption)");
+                                }
                                 bp.setPostType("instagram");
                                 bp.setPostHasImage(true);
                                 bp.setUserProfilePic(profilePic);
                                 bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(js.getJSONObject(0).getString("created_time"))).getTime(), getActivity()));
                                 bp.setImageUrl(thestandardImageUrl);
                                 bp.setDateTime(new Date((long) Long.parseLong(js.getJSONObject(0).getString("created_time")) * 1000));
-                                bandoArray.add(bp);
-                                Log.v("benmark", "added " + String.valueOf(bandoArray.size()));
-                            }
+                                if(!bandoArray.contains(bp)){
+                                    progress++;
+                                    bandoArray.add(bp);
+                                }
                         }
                     } catch (MalformedURLException e) {
 
@@ -504,14 +520,18 @@ public class MyStuffFragment extends Fragment{
         }
     }};
 
-    private void postProgress(int progress) {
-                      String strProgress = String.valueOf(progress) + " %";
-                     pbHorizontal.setProgress(progress);
+    private void postProgress() {
+        int percent = (int)((progress * 100.0f) / totalForProg);
+        Log.v("benmark","progerss = " + String.valueOf(progress) + "tot = " + String.valueOf(totalForProg));
+
+
+                      String strProgress = String.valueOf(percent) + " %";
+                     pbHorizontal.setProgress(percent);
                     /* update secondary progress of horizontal progress bar */
-                     if(progress == 0) {
+                     if(percent == 0) {
                              pbHorizontal.setSecondaryProgress(0);
                        } else {
-                           pbHorizontal.setSecondaryProgress(progress + 5);
+                           pbHorizontal.setSecondaryProgress(percent + 5);
                      }
                       tvProgressHorizontal.setText(strProgress);
     }
