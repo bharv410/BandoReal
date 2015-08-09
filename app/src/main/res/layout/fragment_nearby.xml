@@ -24,6 +24,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
+		android:progressDrawable="@drawable/greenprogress"
 		android:max="100" />
 
 	<TextView
@@ -32,6 +33,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignBottom="@id/pb_horizontal"
 		android:background="@android:color/transparent"
-		android:gravity="center" />
+		android:gravity="center"
+		/>
 
 </RelativeLayout>
