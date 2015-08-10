@@ -34,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.bandologo)
                 .setContentTitle(text)
+                .setAutoCancel(true)
                 .setTicker(text)
                 .setColor(Color.RED);
 
