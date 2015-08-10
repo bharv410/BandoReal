@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
-import classes.CustomGrid;
 import classes.Utils;
 
 /**
@@ -42,8 +41,7 @@ import classes.Utils;
  */
 public class FeauteredFragment extends Fragment {
 
-    ArrayList<BandoPost> bandoArray;
-    MyObservableGridView grid;
+    MyObservableGridView gridViewWithHeader;
     CustomGrid adapter;
 
     private float mActionBarHeight;
@@ -77,11 +75,11 @@ public class FeauteredFragment extends Fragment {
     private void getVerifiedPosts() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addDescendingOrder("createdAt");
-        query.setLimit(12);
+        query.setLimit(20);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
+                final ArrayList<BandoPost> bandoArray = new ArrayList<>();
                 if (e == null) {
-                    bandoArray = new ArrayList<>();
                     for (ParseObject po : objects) {
                         BandoPost bp = new BandoPost();
                         bp.setPostUrl(po.getString("postLink"));
@@ -93,17 +91,19 @@ public class FeauteredFragment extends Fragment {
                         bp.setImageUrl(po.getString("imageUrl"));
                         bp.setUniqueId(po.getObjectId());
                         bp.setViewCOunt(po.getInt("viewCount"));
-                        bandoArray.add(bp);
+                        if (!bandoArray.contains(bp)) {
+                            bandoArray.add(bp);
+                        }
                     }
                     Collections.sort(bandoArray);
                     adapter = new CustomGrid(getActivity(), bandoArray);
-                    grid = (MyObservableGridView) getActivity().findViewById(R.id.grid);
+                    gridViewWithHeader = (MyObservableGridView) getActivity().findViewById(R.id.grid);
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
                     setHeader(headerView);
-                    grid.setAdapter(adapter);
-                    grid.setScrollViewCallbacks((MainActivity) getActivity());
-                    grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    gridViewWithHeader.setAdapter(adapter);
+                    gridViewWithHeader.setScrollViewCallbacks((MainActivity) getActivity());
+                    gridViewWithHeader.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
@@ -125,9 +125,9 @@ public class FeauteredFragment extends Fragment {
 
     private void setHeader(final View v) {
         if (!isFeaturedHeaderSet) {
-            grid.addHeaderView(v, null, true);
+            gridViewWithHeader.addHeaderView(v, null, true);
             ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
-            query.addAscendingOrder("createdAt");
+            query.addDescendingOrder("createdAt");
 
             query.findInBackground(new FindCallback<ParseObject>() {
                 public void done(List<ParseObject> objects, ParseException e) {
@@ -149,11 +149,11 @@ public class FeauteredFragment extends Fragment {
                             v.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    //updateViewCount(objectid);
                                     Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
                                     browserIntent.putExtra("postLink", postLink);
                                     browserIntent.putExtra("imagePath", imagePath);
                                     browserIntent.putExtra("text", text);
+                                    browserIntent.putExtra("featured", true);
                                     startActivity(browserIntent);
 
                                 }
@@ -187,75 +187,72 @@ public class FeauteredFragment extends Fragment {
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return bandoPosts.size();
         }
 
         @Override
         public BandoPost getItem(int position) {
-            // TODO Auto-generated method stub
             return bandoPosts.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
-            return 0;
+            return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
+
             ViewHolder holder;
-            View grid;
-            LayoutInflater inflater = (LayoutInflater) mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
             if (convertView == null) {
-
-                grid = inflater.inflate(R.layout.grid_single, null);
-                //grid.setBackgroundColor(Color.parseColor("#999999"));
-                TextView textView = (TextView) grid.findViewById(R.id.grid_text);
-                TextView dateTextView = (TextView) grid.findViewById(R.id.textViewDate);
-                TextView socialTextView = (TextView) grid.findViewById(R.id.socialTextView);
-                dateTextView.setText(getItem(position).getDateString());
-                Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
-                textView.setTypeface(custom_font);
-                ImageView imageView = (ImageView) grid.findViewById(R.id.grid_image);
-
-                final String postLink = getItem(position).getPostUrl();
-                final String text = getItem(position).getPostText();
-                final String imagePath = getItem(position).getImageUrl();
-                final int viewCOunt = getItem(position).getViewCOunt();
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
-                        browserIntent.putExtra("postLink", postLink);
-                        browserIntent.putExtra("imagePath", imagePath);
-                        browserIntent.putExtra("text", text);
-                        browserIntent.putExtra("viewCount", viewCOunt);
-                        startActivity(browserIntent);
-
-                    }
-                });
-
-                final String siteType = getItem(position).getPostSourceSite();
-                if (!siteType.contains("article"))
-                    socialTextView.setText(siteType);
-
-                String postText = bandoPosts.get(position).getPostText();
-
-                textView.setText(truncateAfteWords(9, postText));
-
-                Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl())
-                        .placeholder(R.drawable.progress_animation)
-                        .into(imageView);
-            } else {
-                grid = (View) convertView;
+                convertView = mInflater.inflate(R.layout.grid_single, parent, false);
+                holder = new ViewHolder();
+                holder.thumbnail = (ImageView) convertView.findViewById(R.id.grid_image);
+                holder.position = position;
+                holder.title = (TextView) convertView.findViewById(R.id.grid_text);
+                Typeface custom_font = Typeface.createFromAsset(mContext.getAssets(), "fonts/ptsansb.ttf");
+                holder.title.setTypeface(custom_font);
+                holder.dateTextView = (TextView) convertView.findViewById(R.id.textViewDate);
+                holder.socialTextView = (TextView) convertView.findViewById(R.id.socialTextView);
+                convertView.setTag(holder);
+            }else{
+                holder = (ViewHolder)convertView.getTag();
             }
 
-            return grid;
+
+            final BandoPost current = bandoPosts.get(position);
+            final String postLink = current.getPostUrl();
+            final String text = current.getPostText();
+            final String imagePath = current.getImageUrl();
+            final int viewCOunt = current.getViewCOunt();
+            final String siteType = current.getPostSourceSite();
+            final String postText = current.getPostText();
+
+
+                if (!siteType.contains("article"))
+                    holder.socialTextView.setText(siteType);
+
+                holder.title.setText(truncateAfteWords(9, postText));
+                holder.dateTextView.setText(getItem(position).getDateString());
+
+                Picasso.with(mContext).load(current.getImageUrl())
+                        .placeholder(R.drawable.progress_animation)
+                        .into(holder.thumbnail);
+
+            holder.thumbnail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(mContext, ArticleDetailActivity.class);
+                    browserIntent.putExtra("postLink", postLink);
+                    browserIntent.putExtra("imagePath", imagePath);
+                    browserIntent.putExtra("text", text);
+                    browserIntent.putExtra("viewCount", viewCOunt);
+                    browserIntent.putExtra("featured", false);
+                    startActivity(browserIntent);
+
+                }
+            });
+            return convertView;
         }
 
         private String truncateAfteWords(int n, String s) {
@@ -273,6 +270,7 @@ public class FeauteredFragment extends Fragment {
 
     private static class ViewHolder {
         public ImageView thumbnail;
+        public TextView title,dateTextView,socialTextView;
         public int position;
     }
 }

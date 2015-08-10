@@ -94,7 +94,12 @@ public class ArticleDetailActivity extends ActionBarActivity {
             }
         }, 1000);
         text = getIntent().getStringExtra("text");
-        updateCount();
+
+        if(getIntent().getBooleanExtra("featured", false)){
+            updateViewCount();
+        }else{
+            updateCount();
+        }
 
 //
 //        imagePath = getIntent().getStringExtra("imagePath");
@@ -102,7 +107,6 @@ public class ArticleDetailActivity extends ActionBarActivity {
 //        articleTitleTextView = (TextView)findViewById(R.id.textViewDetail);
 //        imv = (ImageView)findViewById(R.id.imageViewHeaderDetail);
         //articleTitleTextView.setText(text);
-        Log.v("benmark", "imagePath = " + imagePath);
         //Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.progress_animation).into(imv);
 
 //        imv.setOnClickListener(new View.OnClickListener() {
@@ -239,8 +243,8 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
     }
 
     private void updateViewCount(){
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
-        query.whereEqualTo("postText", text);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
+        query.whereEqualTo("text", text);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -249,6 +253,8 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
                             po.put("viewCount", (int)po.get("viewCount")+1);
                             po.saveInBackground();
                             Log.v("benmark", "updated " + text + "\n touvl" + po.get("viewCount"));
+                        if (viewCountTV != null)
+                            viewCountTV.setText(String.valueOf((int) po.get("viewCount") + 1));
                     }
                 } else {
                     Log.v("benmark", String.valueOf(e.getCode()));

@@ -211,7 +211,7 @@ public class MyObservableGridView extends CustomGridViewWithHeader implements Sc
         ListAdapter mAdapter = getAdapter();
         if (mAdapter != null && !(mAdapter instanceof HeaderViewGridAdapter)) {
             throw new IllegalStateException(
-                    "Cannot add header view to grid -- setAdapter has already been called.");
+                    "Cannot add header view to gridViewWithHeader -- setAdapter has already been called.");
         }
 
         ViewGroup.LayoutParams lyp = v.getLayoutParams();
