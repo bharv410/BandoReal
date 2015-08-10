@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal.editprefences;
+package com.bandotheapp.bando.editprefences;
 
 /**
  * Created by benjamin.harvey on 8/7/15.

@@ -1,10 +1,11 @@
 package classes;
 
 import java.util.Date;
+
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class BandoPost implements Comparable<BandoPost>{
+public class BandoPost implements Comparable<BandoPost> {
     private String dateString;
     private String uniqueId;
     private String postText;
@@ -20,15 +21,15 @@ public class BandoPost implements Comparable<BandoPost>{
 
     private int viewCOunt;
 
-    public BandoPost(){
+    public BandoPost() {
 
     }
 
-    public boolean postHasImage(){
+    public boolean postHasImage() {
         return postHasImage;
     }
 
-    public void setPostHasImage(boolean hasImage){
+    public void setPostHasImage(boolean hasImage) {
         this.postHasImage = hasImage;
     }
 
@@ -99,6 +100,7 @@ public class BandoPost implements Comparable<BandoPost>{
     public void setDateTime(Date datetime) {
         this.dateTime = datetime;
     }
+
     public String getUsername() {
         return username;
     }
@@ -115,7 +117,7 @@ public class BandoPost implements Comparable<BandoPost>{
         return userProfilePic;
     }
 
-    public String getDateString(){
+    public String getDateString() {
         return dateString;
     }
 
@@ -138,9 +140,9 @@ public class BandoPost implements Comparable<BandoPost>{
 
     @Override
     public boolean equals(Object c) {
-        if(c instanceof BandoPost){
-            BandoPost bp = (BandoPost)c;
-            if(bp.postText.contains(this.postText)){
+        if (c instanceof BandoPost) {
+            BandoPost bp = (BandoPost) c;
+            if (bp.postText.contains(this.postText)) {
                 return true;
             }
         }

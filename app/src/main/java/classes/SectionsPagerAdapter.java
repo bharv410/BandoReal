@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.kigeniushq.bandofinal.FeauteredFragment;
-import com.kigeniushq.bandofinal.R;
-import com.kigeniushq.bandofinal.MyStuffFragment;
+import com.bandotheapp.bando.FeauteredFragment;
+import com.bandotheapp.bando.MyStuffFragment;
+import com.bandotheapp.bando.R;
 
 import java.util.Locale;
 

@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.content.Context;
 import android.util.AttributeSet;

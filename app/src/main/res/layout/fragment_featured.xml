@@ -11,7 +11,7 @@
 		android:id="@+id/fakeActionBar"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"/>
-	<com.kigeniushq.bandofinal.MyObservableGridView
+	<com.bandotheapp.bando.MyObservableGridView
 		android:numColumns="2"
 		android:layout_below="@id/fakeActionBar"
 		android:gravity="center"

@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +25,7 @@ import android.widget.Toast;
 import android.os.Handler;
 
 import com.parse.FindCallback;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -36,7 +37,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import classes.CustomTypefaceSpan;
 
@@ -197,9 +200,11 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
     public void bookmark(View v){
 Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show();
+        trackSomething("bookmark", "bookmark");
     }
 
     public void share(View v){
+        trackSomething("share", "share");
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" +getIntent().getStringExtra("text")+"\"" +" via @bandotheapp");
@@ -214,15 +219,23 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
                     for (ParseObject po : list) {
-                        po.put("viewCount", (int)po.get("viewCount")+1);
-                            po.saveInBackground();
-                            Log.v("benmark", "updated " + text + "\n tourl");
-                        if(viewCountTV!=null)
-                            viewCountTV.setText(String.valueOf((int)po.get("viewCount")+1));
+                        po.put("viewCount", (int) po.get("viewCount") + 1);
+                        po.saveInBackground();
+                        Log.v("benmark", "updated " + text + "\n tourl");
+                        if (viewCountTV != null)
+                            viewCountTV.setText(String.valueOf((int) po.get("viewCount") + 1));
                     }
                 }
             }
         });
+    }
+
+    private void trackSomething(String trackThis, String withExtra){
+        Map<String, String> dimensions = new HashMap<String, String>();
+        dimensions.put("article title", text);
+        dimensions.put("track", trackThis);
+        dimensions.put("extra", withExtra);
+        ParseAnalytics.trackEvent("opened article", dimensions);
     }
 
     private void updateViewCount(){

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	  xmlns:app="http://schemas.android.com/apk/res-auto"
 	  xmlns:tools="http://schemas.android.com/tools"
-	  tools:context="com.kigeniushq.bandofinal.EditFeedActivity">
+	  tools:context="com.bandotheapp.bando.EditFeedActivity">
 	<item android:id="@+id/action_settings"
 		  android:title="Change Network"
 		  android:orderInCategory="100"

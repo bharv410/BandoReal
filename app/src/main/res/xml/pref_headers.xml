@@ -3,7 +3,7 @@
 	<!-- These settings headers are only used on tablets. -->
 
 	<header
-		android:fragment="com.kigeniushq.bandofinal.SettingsActivity$GeneralPreferenceFragment"
+		android:fragment="com.bandotheapp.bando.SettingsActivity$GeneralPreferenceFragment"
 		android:title="@string/pref_header_general"/>
 
 </preference-headers>

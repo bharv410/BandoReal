@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -7,25 +7,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 
-import java.util.List;
 
 import classes.InstagramApp;
 import classes.TwitterLogin;
@@ -41,7 +35,7 @@ import classes.TwitterLogin;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final String client_id = "49fcbbb3abe9448798d8849806da6cd4";
     private final String client_secret = "424a0cc8965a4f7da7c73897fb90b810";
     private final String callback_url = "http://phantom.com";
@@ -50,7 +44,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     private InstagramApp mApp;
     private InstagramApp.OAuthAuthenticationListener listener;
 
-    CheckBoxPreference twitPref,igPref;
+    CheckBoxPreference twitPref, igPref;
     Preference about;
 
     @Override
@@ -62,6 +56,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             public void onSuccess() {
                 Toast.makeText(SettingsActivity.this, "Connected to IG!", Toast.LENGTH_LONG).show();
             }
+
             @Override
             public void onFail(String error) {
                 Toast.makeText(SettingsActivity.this, error, Toast.LENGTH_SHORT).show();
@@ -75,8 +70,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
 
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
@@ -94,7 +88,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         addPreferencesFromResource(R.xml.pref_general);
 
 
-                twitPref = (CheckBoxPreference) findPreference("twit_checkbox");
+        twitPref = (CheckBoxPreference) findPreference("twit_checkbox");
         twitPref.setChecked(TwitterLogin.getTwitterLoginCheck());
         twitPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -124,7 +118,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
         igPref.setIcon(R.drawable.instagramlogo);
 
-        Preference prefereces=findPreference("info");
+        Preference prefereces = findPreference("info");
         prefereces.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName()));
@@ -133,7 +127,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             }
         });
 
-        Preference prefereces2=findPreference("share");
+        Preference prefereces2 = findPreference("share");
         prefereces2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 Intent sendIntent = new Intent();
@@ -187,7 +181,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             addPreferencesFromResource(R.xml.pref_general);
         }
     }
-    public void connectToInstagram(){
+
+    public void connectToInstagram() {
         if (mApp.hasAccessToken()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(
                     SettingsActivity.this);
@@ -198,7 +193,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                                 public void onClick(
                                         DialogInterface dialog, int id) {
                                     mApp.resetAccessToken();
-                                    Toast.makeText(getApplicationContext(), "Connected to IG! as "+ mApp.getUserName(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Connected to IG! as " + mApp.getUserName(), Toast.LENGTH_LONG).show();
                                     refresh();
                                 }
                             })
@@ -217,13 +212,15 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         }
         refresh();
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         refresh();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
-    private void refresh(){
+
+    private void refresh() {
         twitPref.setChecked(TwitterLogin.getTwitterLoginCheck());
         igPref.setChecked(mApp.hasAccessToken());
     }

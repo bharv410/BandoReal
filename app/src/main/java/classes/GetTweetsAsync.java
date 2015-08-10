@@ -1,12 +1,8 @@
 package classes;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.kigeniushq.bandofinal.MainActivity;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.SaveCallback;
+import com.bandotheapp.bando.MainActivity;
 
 import java.util.ArrayList;
 
@@ -23,19 +19,20 @@ public class GetTweetsAsync extends AsyncTask<Void, Void, ArrayList<Status>> {
     ArrayList<twitter4j.Status> tweets;
     private MainActivity activity;
 
-    public GetTweetsAsync (MainActivity activity){
-        this.activity=activity;
+    public GetTweetsAsync(MainActivity activity) {
+        this.activity = activity;
         tweets = new ArrayList<twitter4j.Status>();
     }
 
     @Override
     protected ArrayList<twitter4j.Status> doInBackground(Void... arg0) {
-        try{
+        try {
             ResponseList<twitter4j.Status> response = TwitterLogin.twitter.timelines().getHomeTimeline();
-            for(twitter4j.Status st : response){
+            for (twitter4j.Status st : response) {
                 tweets.add(st);
             }
-        }catch (TwitterException twe){}
+        } catch (TwitterException twe) {
+        }
         return tweets;
     }
 

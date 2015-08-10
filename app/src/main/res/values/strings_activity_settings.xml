@@ -14,9 +14,6 @@
 	<string name="pref_description_social_ig">Connect your instagram account to get customized content and improve daily posts
 	</string>
 
-	<string name="pref_title_display_name">Display name</string>
-	<string name="pref_default_display_name">John Smith</string>
-
 	<string name="pref_title_add_friends_to_messages">Push Notifications</string>
 	<string-array name="pref_example_list_titles">
 		<item>Always</item>

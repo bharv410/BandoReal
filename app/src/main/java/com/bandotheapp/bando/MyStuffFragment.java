@@ -1,8 +1,6 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -12,32 +10,27 @@ import android.content.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.URLConnection;
 import java.util.Date;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.squareup.picasso.Picasso;
+import com.todddavies.components.progressbar.ProgressWheel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,23 +38,18 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 import classes.BandoPost;
 import classes.InstagramApp;
-import classes.TwitterLogin;
 import classes.Utils;
 import twitter4j.Paging;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.User;
 import twitter4j.auth.AccessToken;
-import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 
@@ -79,20 +67,16 @@ public class MyStuffFragment extends Fragment {
     private final String client_secret = "424a0cc8965a4f7da7c73897fb90b810";
     private final String callback_url = "http://phantom.com";
 
-    long iGStarttime, iGEndTime;
-
     private InstagramApp mApp;
     private InstagramApp.OAuthAuthenticationListener listener;
     boolean gettingTwit = false;
 
-    private ArrayList<BandoPost> bandoArray;
     private ObservableListView listView;
     private FeedListAdapter listAdapter;
 
     public ActionBar mActionBar;
 
-    private ProgressBar pbHorizontal = null;
-    private TextView tvProgressHorizontal = null;
+    private ProgressWheel pw;
 
     /* current progress on progress bars */
     private int progress = 0;
@@ -125,15 +109,17 @@ public class MyStuffFragment extends Fragment {
     public void onStart() {
         super.onStart();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
-        pbHorizontal = (ProgressBar) getActivity().findViewById(R.id.pb_horizontal);
-        tvProgressHorizontal = (TextView) getActivity().findViewById(R.id.tv_progress_horizontal);
+        pw = (ProgressWheel) getActivity().findViewById(R.id.pw_spinner);
         progress = 0;
         totalForProg = 0;
 
-        pbHorizontal.setVisibility(View.VISIBLE);
-        tvProgressHorizontal.setVisibility(View.VISIBLE);
+        pw.setVisibility(View.VISIBLE);
+        pw.spin();
+        pw.incrementProgress();
 
-        bandoArray = new ArrayList<>();
+        listView = (ObservableListView) getActivity().findViewById(R.id.list);
+        listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
+        listView.setAdapter(listAdapter);
 
         List<URL> allIGUsers = new ArrayList<>();
         if ((preferences.getBoolean("MUSIC", true)))
@@ -147,7 +133,6 @@ public class MyStuffFragment extends Fragment {
         if (preferences.getBoolean("PHOTOS & ART", false))
             allIGUsers.addAll(artlisti);
 
-        iGStarttime = System.nanoTime();
         new GetInstagramImagesAsync().execute(allIGUsers);
     }
 
@@ -158,18 +143,16 @@ public class MyStuffFragment extends Fragment {
         return rootView;
     }
 
-    private class DownloadTask extends AsyncTask<String, Integer, String> {
-        long startTime, endTime;
-
+    private class DownloadTask extends AsyncTask<String, BandoPost, String> {
         public DownloadTask() {
-            startTime = System.nanoTime();
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(BandoPost... values) {
             Log.v("benmark", "onProgressUpdate = " + String.valueOf(values[0]));
             super.onProgressUpdate(values);
             postProgress();
+            listAdapter.add(values[0]);
         }
 
         @Override
@@ -206,7 +189,6 @@ public class MyStuffFragment extends Fragment {
                 totalForProg = totalForProg + allTwitterUsers.size();
                 for (String individualId : allTwitterUsers) {
                     progress++;
-                    publishProgress(progress);
                     List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
                     twitter4j.Status firstStatus = statusesMeek.get(0);
                     BandoPost bp = new BandoPost();
@@ -226,8 +208,7 @@ public class MyStuffFragment extends Fragment {
                     bp.setDateString(Utils.getTimeAgo(firstStatus.getCreatedAt().getTime(), getActivity()));
                     bp.setImageUrl(firstStatus.getUser().getBiggerProfileImageURL());
                     bp.setDateTime(firstStatus.getCreatedAt());
-                    if (!bandoArray.contains(bp))
-                        bandoArray.add(bp);
+                    publishProgress(bp);
                 }
             } catch (TwitterException tw) {
 
@@ -239,14 +220,8 @@ public class MyStuffFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             gettingTwit = false;
-            Collections.sort(bandoArray);
-            listView = (ObservableListView) getActivity().findViewById(R.id.list);
-            listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, bandoArray);
-            endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-            double seconds = (double) duration / 1000000000.0;
-            Log.v("benmark", "twitter took " + (seconds) + "senconds");
-            listView.setAdapter(listAdapter);
+            pw.stopSpinning();
+            pw.setVisibility(View.GONE);
             //listView.setScrollViewCallbacks((MainActivity)getActivity());
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -256,8 +231,6 @@ public class MyStuffFragment extends Fragment {
                     //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                 }
             });
-            tvProgressHorizontal.setVisibility(View.GONE);
-            pbHorizontal.setVisibility(View.GONE);
         }
     }
 
@@ -294,6 +267,13 @@ public class MyStuffFragment extends Fragment {
         }
 
         @Override
+        public void notifyDataSetChanged() {
+            //do your sorting here
+            Collections.sort(bandoPosts);
+            super.notifyDataSetChanged();
+        }
+
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
             if (inflater == null)
@@ -315,6 +295,8 @@ public class MyStuffFragment extends Fragment {
                     .findViewById(R.id.feedImage1);
             ImageView socialmageView = (ImageView) convertView
                     .findViewById(R.id.socialNetworkStamp);
+            TextView postType = (TextView) convertView
+                    .findViewById(R.id.postTypeTextView);
 
             if (getItem(position).getPostType().contains("instagram"))
                 Picasso.with(getActivity()).load(R.drawable.instagramlogo).into(socialmageView);
@@ -324,6 +306,20 @@ public class MyStuffFragment extends Fragment {
             BandoPost item = getItem(position);
 
             name.setText(item.getUsername());
+
+
+            String removeAtSYmbol = item.getUsername().substring(1,item.getUsername().length());
+            if(musiclistt.contains(removeAtSYmbol) || musiclististring.contains(removeAtSYmbol))
+                postType.setText("Music");
+            if(sportlistt.contains(removeAtSYmbol) || sportlististring.contains(removeAtSYmbol))
+                postType.setText("Sports");
+            if(culturelistt.contains(removeAtSYmbol) || culturelististring.contains(removeAtSYmbol))
+                postType.setText("Culture");
+            if(comedylistt.contains(removeAtSYmbol) || comedylististring.contains(removeAtSYmbol))
+                postType.setText("Comedy");
+            if(artlistt.contains(removeAtSYmbol) || artlististring.contains(removeAtSYmbol))
+                postType.setText("Art");
+
 
             // Converting timestamp into x ago format
 
@@ -354,15 +350,16 @@ public class MyStuffFragment extends Fragment {
 
     }
 
-    public class GetInstagramImagesAsync extends AsyncTask<List<URL>, Integer, List<JSONArray>> {
+    public class GetInstagramImagesAsync extends AsyncTask<List<URL>, BandoPost, List<JSONArray>> {
 
         public GetInstagramImagesAsync() {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(BandoPost... values) {
             super.onProgressUpdate(values);
             postProgress();
+            listAdapter.add(values[0]);
         }
 
         protected List<JSONArray> doInBackground(List<URL>... urls) {
@@ -379,7 +376,6 @@ public class MyStuffFragment extends Fragment {
                         JSONObject ob = new JSONObject(line);
                         JSONArray js = ob.getJSONArray("data");
                         progress++;
-                        publishProgress(progress);
                         String theusername = "@" + js.getJSONObject(0).getJSONObject("user").getString("username");
                         String thestandardImageUrl = js.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
 
@@ -402,9 +398,7 @@ public class MyStuffFragment extends Fragment {
                         bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(js.getJSONObject(0).getString("created_time"))).getTime(), getActivity()));
                         bp.setImageUrl(thestandardImageUrl);
                         bp.setDateTime(new Date((long) Long.parseLong(js.getJSONObject(0).getString("created_time")) * 1000));
-                        if (!bandoArray.contains(bp)) {
-                            bandoArray.add(bp);
-                        }
+                        publishProgress(bp);
                     }
                 } catch (MalformedURLException e) {
 
@@ -421,14 +415,7 @@ public class MyStuffFragment extends Fragment {
         }
 
         protected void onPostExecute(List<JSONArray> igTimelines) {
-            if (bandoArray.size() > 0) {
-                Collections.sort(bandoArray);
-                iGEndTime = System.nanoTime();
-                long duration = (iGEndTime - iGStarttime);
-                double seconds = (double) duration / 1000000000.0;
-                Log.v("benmark", "instagram took " + (seconds) + "senconds");
-                new DownloadTask().execute();
-            }
+            new DownloadTask().execute();
         }
     }
 
@@ -519,19 +506,60 @@ public class MyStuffFragment extends Fragment {
         }
     }};
 
+    ArrayList<String> musiclististring = new ArrayList<String>() {{
+                add("champagnepapi");
+                add("meekmill");
+                add("badgirlriri");
+                add("travisscott");
+                add("abelxo");
+                add("asvpxrocky");
+                add("10685362");
+            }};
+
+                ArrayList<String> sportlististring = new ArrayList<String>() {{
+                add("Easymoneysniper");
+                add("KingJames");
+                add("FloydMayweather");
+            }};
+
+                ArrayList<String> culturelististring = new ArrayList<String>() {{
+                add("kendalljenner");
+                add("niykeeheaton");
+                add("tazsangels_");
+                add("kyliejenner");
+                add("sodraya");
+                    add("bholly");
+            }};
+         ArrayList<String> comedylististring = new ArrayList<String>() {{
+                add("atown0705");
+                add("BdotAdot5");
+                add("kevinhart4real");
+                add("dormtainment");
+            }};
+
+                ArrayList<String> artlististring = new ArrayList<String>() {{
+                add("theo.skudra");
+                add("vanstyles");
+                add("thecamkirk");
+                add("natgeo");
+            }};
+
     private void postProgress() {
         int percent = (int) ((progress * 100.0f) / totalForProg);
         Log.v("benmark", "progerss = " + String.valueOf(progress) + "tot = " + String.valueOf(totalForProg));
+        pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();
+        pw.incrementProgress();
+        if(listAdapter.getCount()>20)
+            pw.setVisibility(View.INVISIBLE);
 
 
-        String strProgress = String.valueOf(percent) + " %";
-        pbHorizontal.setProgress(percent);
-                    /* update secondary progress of horizontal progress bar */
-        if (percent == 0) {
-            pbHorizontal.setSecondaryProgress(0);
-        } else {
-            pbHorizontal.setSecondaryProgress(percent + 5);
-        }
-        tvProgressHorizontal.setText(strProgress);
+
     }
 }

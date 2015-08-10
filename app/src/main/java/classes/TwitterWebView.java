@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
 
-import com.kigeniushq.bandofinal.R;
+import com.bandotheapp.bando.R;
+
 
 public class TwitterWebView extends Activity {
 

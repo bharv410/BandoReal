@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -24,6 +24,6 @@ public class ThreeFourthsImageView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(getMeasuredWidth(), (getMeasuredWidth()*3)/4); //Snap to width
+        setMeasuredDimension(getMeasuredWidth(), (getMeasuredWidth() * 3) / 4); //Snap to width
     }
 }

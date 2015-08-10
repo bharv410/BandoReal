@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
-import com.kigeniushq.bandofinal.ArticleDetailActivity;
-import com.kigeniushq.bandofinal.R;
+
+import com.bandotheapp.bando.ArticleDetailActivity;
+import com.bandotheapp.bando.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

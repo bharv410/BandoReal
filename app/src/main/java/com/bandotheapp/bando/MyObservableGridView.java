@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.content.Context;
 import android.database.DataSetObservable;
@@ -15,12 +15,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 import android.widget.Filter;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.Scrollable;

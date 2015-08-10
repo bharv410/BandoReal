@@ -14,7 +14,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.kigeniushq.bandofinal.MainActivity;
+import com.bandotheapp.bando.MainActivity;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

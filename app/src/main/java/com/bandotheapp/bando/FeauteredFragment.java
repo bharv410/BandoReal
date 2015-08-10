@@ -1,4 +1,4 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,13 +34,12 @@ import java.util.regex.Pattern;
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
-import classes.CustomGrid;
 import classes.Utils;
 
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class FeauteredFragment extends Fragment{
+public class FeauteredFragment extends Fragment {
 
     ArrayList<BandoPost> bandoArray;
     MyObservableGridView grid;
@@ -59,23 +58,22 @@ public class FeauteredFragment extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        pb = (ProgressBar)getActivity().findViewById(R.id.progressBar2);
+        pb = (ProgressBar) getActivity().findViewById(R.id.progressBar2);
 
-        mActionBar = ((ActionBarActivity)getActivity()).getSupportActionBar();
+        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
 
         final TypedArray mstyled = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
         TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics())
-            / 3;
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics())
+                    / 3;
         }
         mstyled.recycle();
 
         getVerifiedPosts();
     }
 
-    private void getVerifiedPosts(){
+    private void getVerifiedPosts() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addDescendingOrder("createdAt");
         query.setLimit(12);
@@ -118,54 +116,55 @@ public class FeauteredFragment extends Fragment{
             }
         });
     }
+
     @Override
     public void onStart() {
         super.onStart();
     }
 
-    private void setHeader(final View v){
-if(!isFeaturedHeaderSet) {
-    grid.addHeaderView(v, null, true);
-    ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
-    query.addAscendingOrder("createdAt");
+    private void setHeader(final View v) {
+        if (!isFeaturedHeaderSet) {
+            grid.addHeaderView(v, null, true);
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
+            query.addAscendingOrder("createdAt");
 
-    query.findInBackground(new FindCallback<ParseObject>() {
-        public void done(List<ParseObject> objects, ParseException e) {
-            if (e == null) {
-                isFeaturedHeaderSet = true;
-                Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl"))
-                        .placeholder(R.drawable.progress_animation)
-                        .into((ImageView) v.findViewById(R.id.imageViewHeader));
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
+                        isFeaturedHeaderSet = true;
+                        Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl"))
+                                .placeholder(R.drawable.progress_animation)
+                                .into((ImageView) v.findViewById(R.id.imageViewHeader));
 
-                TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
-                Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
-                if(featuredText!=null) {
-                    featuredText.setTypeface(custom_font);
-                    featuredText.setText(objects.get(0).getString("text"));
+                        TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
+                        Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
+                        if (featuredText != null) {
+                            featuredText.setTypeface(custom_font);
+                            featuredText.setText(objects.get(0).getString("text"));
 
-                    final String postLink = objects.get(0).getString("postLink");
-                    final String text = objects.get(0).getString("text");
-                    final String imagePath = objects.get(0).getString("imageUrl");
-                    final String objectid = objects.get(0).getObjectId();
-                    v.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //updateViewCount(objectid);
-                            Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
-                            browserIntent.putExtra("postLink", postLink);
-                            browserIntent.putExtra("imagePath", imagePath);
-                            browserIntent.putExtra("text", text);
-                            startActivity(browserIntent);
+                            final String postLink = objects.get(0).getString("postLink");
+                            final String text = objects.get(0).getString("text");
+                            final String imagePath = objects.get(0).getString("imageUrl");
+                            final String objectid = objects.get(0).getObjectId();
+                            v.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    //updateViewCount(objectid);
+                                    Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                                    browserIntent.putExtra("postLink", postLink);
+                                    browserIntent.putExtra("imagePath", imagePath);
+                                    browserIntent.putExtra("text", text);
+                                    startActivity(browserIntent);
 
+                                }
+                            });
                         }
-                    });
+                    } else {
+                        Log.v("benmark", "code = " + String.valueOf(e.getCode()));
+                    }
                 }
-            } else {
-                Log.v("benmark", "code = " + String.valueOf(e.getCode()));
-            }
+            });
         }
-    });
-}
     }
 
     @Override
@@ -184,7 +183,7 @@ if(!isFeaturedHeaderSet) {
             super(context, 0, posts);
             this.mContext = context;
             this.bandoPosts = posts;
-            mInflater = LayoutInflater.from( context );
+            mInflater = LayoutInflater.from(context);
         }
 
         @Override
@@ -208,7 +207,7 @@ if(!isFeaturedHeaderSet) {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
-             ViewHolder holder;
+            ViewHolder holder;
             View grid;
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -223,7 +222,7 @@ if(!isFeaturedHeaderSet) {
                 dateTextView.setText(getItem(position).getDateString());
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
                 textView.setTypeface(custom_font);
-                ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);
+                ImageView imageView = (ImageView) grid.findViewById(R.id.grid_image);
 
                 final String postLink = getItem(position).getPostUrl();
                 final String text = getItem(position).getPostText();
@@ -243,16 +242,16 @@ if(!isFeaturedHeaderSet) {
                 });
 
                 final String siteType = getItem(position).getPostSourceSite();
-                if(!siteType.contains("article"))
+                if (!siteType.contains("article"))
                     socialTextView.setText(siteType);
 
                 String postText = bandoPosts.get(position).getPostText();
 
-                textView.setText(truncateAfteWords(9,postText));
+                textView.setText(truncateAfteWords(9, postText));
 
-                    Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl())
-                            .placeholder(R.drawable.progress_animation)
-                            .into(imageView);
+                Picasso.with(getActivity()).load(bandoPosts.get(position).getImageUrl())
+                        .placeholder(R.drawable.progress_animation)
+                        .into(imageView);
             } else {
                 grid = (View) convertView;
             }
@@ -265,13 +264,14 @@ if(!isFeaturedHeaderSet) {
             if (s == null) return null;
             if (n <= 0) return "";
             Matcher m = WB_PATTERN.matcher(s);
-            for (int i=0; i<n && m.find(); i++);
+            for (int i = 0; i < n && m.find(); i++) ;
             if (m.hitEnd())
                 return s;
             else
                 return s.substring(0, m.end());
         }
     }
+
     private static class ViewHolder {
         public ImageView thumbnail;
         public int position;

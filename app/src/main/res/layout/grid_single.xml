@@ -6,14 +6,14 @@
 				android:layout_marginTop="@dimen/feed_item_margin"
 				android:background="@drawable/bg_parent_rounded_corner">
 
-	<com.kigeniushq.bandofinal.SquareImageView
+	<com.bandotheapp.bando.SquareImageView
 		android:id="@+id/grid_image"
 		android:src="@drawable/progress_animation"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
 		android:scaleType="centerCrop">
-	</com.kigeniushq.bandofinal.SquareImageView>
+	</com.bandotheapp.bando.SquareImageView>
 
 	<TextView
 		android:layout_width="wrap_content"

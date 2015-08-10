@@ -1,19 +1,13 @@
-package com.kigeniushq.bandofinal;
+package com.bandotheapp.bando;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -29,11 +23,13 @@ import android.view.Window;
 import com.astuetz.PagerSlidingTabStrip;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.kigeniushq.bandofinal.editprefences.AlarmReceiver;
-import com.kigeniushq.bandofinal.editprefences.ChooseCategoriesActivity;
+import com.bandotheapp.bando.editprefences.AlarmReceiver;
+import com.bandotheapp.bando.editprefences.ChooseCategoriesActivity;
+import com.parse.ParseAnalytics;
 
 import java.util.Calendar;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
@@ -52,13 +48,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
         setupActionBar();
 
         setMorningAlarm();
     }
 
-    private void setMorningAlarm(){
+    private void trackSomething(String trackThis, String withExtra){
+        Map<String, String> dimensions = new HashMap<String, String>();
+        dimensions.put("track", trackThis);
+        dimensions.put("extra", withExtra);
+        ParseAnalytics.trackEvent("opened article", dimensions);
+    }
+
+    private void setMorningAlarm() {
         Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
@@ -66,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        Calendar firingCal= Calendar.getInstance();
+        Calendar firingCal = Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
 
         firingCal.set(Calendar.HOUR, 8); // At the hour you wanna fire
@@ -76,28 +80,27 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         long intendedTime = firingCal.getTimeInMillis();
         long currentTime = currentCal.getTimeInMillis();
 
-        if(intendedTime >= currentTime) // you can add buffer time too here to ignore some small differences in milliseconds
+        if (intendedTime >= currentTime) // you can add buffer time too here to ignore some small differences in milliseconds
         {
             //set from today
             alarmManager.setRepeating(AlarmManager.RTC,
-                    intendedTime , AlarmManager.INTERVAL_DAY,
+                    intendedTime, AlarmManager.INTERVAL_DAY,
                     pendingIntent);
 
-        }
-        else{
+        } else {
             //set from next day
             // you might consider using calendar.add() for adding one day to the current day
             firingCal.add(Calendar.DAY_OF_MONTH, 1);
             intendedTime = firingCal.getTimeInMillis();
 
             alarmManager.setRepeating(AlarmManager.RTC,
-                    intendedTime , AlarmManager.INTERVAL_DAY,
+                    intendedTime, AlarmManager.INTERVAL_DAY,
                     pendingIntent);
 
         }
     }
 
-    private void setupActionBar(){
+    private void setupActionBar() {
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayUseLogoEnabled(true);
         mActionBar.setTitle("");
@@ -117,9 +120,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         final TypedArray mstyled = getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
         TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics())
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics())
                     / 3;
         }
         mstyled.recycle();
@@ -142,16 +144,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if(position==1){
+                if (position == 1) {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                     boolean previouslyStarted = prefs.getBoolean("pref_previously_started", false);
-                    if(!previouslyStarted) {
+                    if (!previouslyStarted) {
                         SharedPreferences.Editor edit = prefs.edit();
-                        edit.putBoolean("pref_previously_started",Boolean.TRUE);
+                        edit.putBoolean("pref_previously_started", Boolean.TRUE);
                         edit.commit();
                         startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
                     }
                 }
+                trackSomething("pageChange", String.valueOf(position));
             }
         });
 
@@ -163,6 +166,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setTabListener(this));
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -176,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
-        }else if(id == R.id.action_feed_item){
+        } else if (id == R.id.action_feed_item) {
             startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
             return true;
         }
@@ -201,7 +205,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        if (mActionBar != null ) {
+        if (mActionBar != null) {
             if (scrollY >= mActionBarHeight && mActionBar.isShowing()) {
                 mActionBar.hide();
             } else if (scrollY == 0 && !mActionBar.isShowing()) {

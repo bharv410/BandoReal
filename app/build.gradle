@@ -3,13 +3,14 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
-
     defaultConfig {
-        applicationId "com.kigeniushq.bandofinal"
+        applicationId 'com.bandotheapp.bando'
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 8
-        versionName "1.0.8"
+        versionCode 9
+        versionName "1.0.9"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -17,20 +18,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/twitter4j-core-4.0.2.jar')
-    compile group: 'com.squareup.picasso', name: 'picasso', version: '2.3.2'
-    compile fileTree(dir: 'libs', include: 'Parse-*.jar')
-    compile group: 'com.squareup.picasso', name: 'picasso', version: '2.3.2'
+    compile 'com.squareup.picasso:picasso:2.3.2'
+    compile fileTree(include: 'Parse-*.jar', dir: 'libs')
+    compile 'com.squareup.picasso:picasso:2.3.2'
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'in.srain.cube:grid-view-with-header-footer:1.0.12'
     compile 'com.android.support:support-v13:+'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.2'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'cat.ereza:customactivityoncrash:1.3.0'
+    compile 'com.github.Todd-Davies:ProgressWheel:1.0'
 }
