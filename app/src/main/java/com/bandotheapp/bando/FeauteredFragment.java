@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
+import classes.CustomGrid;
 import classes.Utils;
 
 /**
@@ -138,7 +139,6 @@ public class FeauteredFragment extends Fragment {
 
                         TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
                         Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
-                        if (featuredText != null) {
                             featuredText.setTypeface(custom_font);
                             featuredText.setText(objects.get(0).getString("text"));
 
@@ -158,7 +158,6 @@ public class FeauteredFragment extends Fragment {
 
                                 }
                             });
-                        }
                     } else {
                         Log.v("benmark", "code = " + String.valueOf(e.getCode()));
                     }

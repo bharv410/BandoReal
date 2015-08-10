@@ -45,6 +45,7 @@ import java.util.List;
 import classes.BandoPost;
 import classes.InstagramApp;
 import classes.Utils;
+import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -149,7 +150,6 @@ public class MyStuffFragment extends Fragment {
 
         @Override
         protected void onProgressUpdate(BandoPost... values) {
-            Log.v("benmark", "onProgressUpdate = " + String.valueOf(values[0]));
             super.onProgressUpdate(values);
             postProgress();
             listAdapter.add(values[0]);
@@ -198,15 +198,14 @@ public class MyStuffFragment extends Fragment {
                     bp.setPostType("twitter");
                     if (firstStatus.getMediaEntities().length > 0) {
                         bp.setPostHasImage(true);
-                        bp.setImageUrl(firstStatus.getMediaEntities()[0].getMediaURL());
+                        bp.setImageUrl(firstStatus.getMediaEntities()[0].getMediaURLHttps());
                     } else {
                         bp.setPostHasImage(false);
                     }
 
                     bp.setUsername("@" + firstStatus.getUser().getScreenName());
-                    bp.setUserProfilePic(firstStatus.getUser().getOriginalProfileImageURL());
                     bp.setDateString(Utils.getTimeAgo(firstStatus.getCreatedAt().getTime(), getActivity()));
-                    bp.setImageUrl(firstStatus.getUser().getBiggerProfileImageURL());
+                    bp.setUserProfilePic(firstStatus.getUser().getBiggerProfileImageURL());
                     bp.setDateTime(firstStatus.getCreatedAt());
                     publishProgress(bp);
                 }
@@ -546,7 +545,6 @@ public class MyStuffFragment extends Fragment {
 
     private void postProgress() {
         int percent = (int) ((progress * 100.0f) / totalForProg);
-        Log.v("benmark", "progerss = " + String.valueOf(progress) + "tot = " + String.valueOf(totalForProg));
         pw.incrementProgress();
         pw.incrementProgress();
         pw.incrementProgress();
