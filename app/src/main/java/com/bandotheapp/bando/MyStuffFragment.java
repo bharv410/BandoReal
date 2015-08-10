@@ -83,6 +83,8 @@ public class MyStuffFragment extends Fragment {
     private int progress = 0;
     private int totalForProg = 0;
 
+    private List<BandoPost> listOfPostsThatAreInTheArrayToAvoidDuplicates;
+
     public MyStuffFragment() {
     }
 
@@ -118,6 +120,9 @@ public class MyStuffFragment extends Fragment {
         pw.spin();
         pw.incrementProgress();
 
+        listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
+
+
         listView = (ObservableListView) getActivity().findViewById(R.id.list);
         listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
         listView.setAdapter(listAdapter);
@@ -152,7 +157,10 @@ public class MyStuffFragment extends Fragment {
         protected void onProgressUpdate(BandoPost... values) {
             super.onProgressUpdate(values);
             postProgress();
-            listAdapter.add(values[0]);
+            if(!listOfPostsThatAreInTheArrayToAvoidDuplicates.contains(values[0])){
+                listAdapter.add(values[0]);
+                listOfPostsThatAreInTheArrayToAvoidDuplicates.add(values[0]);
+            }
         }
 
         @Override
@@ -358,7 +366,10 @@ public class MyStuffFragment extends Fragment {
         protected void onProgressUpdate(BandoPost... values) {
             super.onProgressUpdate(values);
             postProgress();
-            listAdapter.add(values[0]);
+            if(!listOfPostsThatAreInTheArrayToAvoidDuplicates.contains(values[0])){
+                listAdapter.add(values[0]);
+                listOfPostsThatAreInTheArrayToAvoidDuplicates.add(values[0]);
+            }
         }
 
         protected List<JSONArray> doInBackground(List<URL>... urls) {
