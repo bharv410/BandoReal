@@ -202,7 +202,8 @@ public class MyStuffFragment extends Fragment {
                     List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
                     twitter4j.Status firstStatus = statusesMeek.get(0);
                     BandoPost bp = new BandoPost();
-                    bp.setPostUrl(firstStatus.getSource());
+                    bp.setPostUrl("https://twitter.com/" + firstStatus.getUser().getScreenName()
+                            + "/status/" + firstStatus.getId());
                     bp.setPostSourceSite(firstStatus.getSource());
                     bp.setPostText(firstStatus.getText());
                     bp.setPostType("twitter");
