@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -183,7 +184,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         } else if (id == R.id.action_feed_item) {
             startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
             return true;
-        }
+        } else if (id == R.id.action_feedback_item) {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto", "contactbando@gmail.com", null));
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Bando Feedback");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        return true;
+    }
         return super.onOptionsItemSelected(item);
     }
 

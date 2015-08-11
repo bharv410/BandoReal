@@ -75,7 +75,7 @@ public class FeauteredFragment extends Fragment {
     private void getVerifiedPosts() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addDescendingOrder("createdAt");
-        query.setLimit(20);
+        query.setLimit(14);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 final ArrayList<BandoPost> bandoArray = new ArrayList<>();

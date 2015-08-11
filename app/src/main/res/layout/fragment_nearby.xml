@@ -21,17 +21,17 @@
 
 	<com.todddavies.components.progressbar.ProgressWheel
 		android:id="@+id/pw_spinner"
-		android:layout_width="150dp"
-		android:layout_height="150dp"
+		android:layout_width="75dp"
+		android:layout_height="75dp"
 		ProgressWheel:textColor="#222222"
 		ProgressWheel:textSize="14sp"
 		ProgressWheel:rimColor="#44168807"
 		ProgressWheel:barLength="60dp"
 		ProgressWheel:barColor="#339BB9"
-		ProgressWheel:barWidth="25dp"
-		ProgressWheel:rimWidth="25dp"
+		ProgressWheel:barWidth="18dp"
+		ProgressWheel:rimWidth="18dp"
 		ProgressWheel:spinSpeed="3dp"
-		android:layout_centerVertical="true"
+		android:layout_below="@+id/fakeActionBar2"
 		android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

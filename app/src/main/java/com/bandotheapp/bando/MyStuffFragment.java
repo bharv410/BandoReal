@@ -1,7 +1,9 @@
 package com.bandotheapp.bando;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -310,7 +312,25 @@ public class MyStuffFragment extends Fragment {
             else
                 Picasso.with(getActivity()).load(R.drawable.twitterlogo).into(socialmageView);
 
-            BandoPost item = getItem(position);
+            final BandoPost item = getItem(position);
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(item.getPostUrl()));
+                    startActivity(i);
+                }
+            });
+
+            profilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(item.getPostUrl()));
+                    startActivity(i);
+                }
+            });
 
             name.setText(item.getUsername());
 

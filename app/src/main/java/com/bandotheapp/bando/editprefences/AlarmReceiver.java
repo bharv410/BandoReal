@@ -5,7 +5,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -23,7 +25,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Log.v("benmark", "recieved");
-        showNotifWithPostOrNah(context, "Bando has new posts!");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String notifs = sharedPreferences.getString("notifs", "1");
+        if(notifs.equals("1"))
+            showNotifWithPostOrNah(context, "Bando has new posts!");
     }
 
     private void showNotifWithPostOrNah(Context context, String text) {
