@@ -122,26 +122,26 @@ public class MyStuffFragment extends Fragment {
         pw.spin();
         pw.incrementProgress();
 
-        listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
+        if(listOfPostsThatAreInTheArrayToAvoidDuplicates==null){ //only restart list if null
+            listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
+            listView = (ObservableListView) getActivity().findViewById(R.id.list);
+            listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
+            listView.setAdapter(listAdapter);
 
+        }
+            List<URL> allIGUsers = new ArrayList<>();
+            if ((preferences.getBoolean("MUSIC", true)))
+                allIGUsers.addAll(musiclisti);
+            if (preferences.getBoolean("SPORTS", false))
+                allIGUsers.addAll(sportlisti);
+            if (preferences.getBoolean("CULTURE", false))
+                allIGUsers.addAll(culturelisti);
+            if (preferences.getBoolean("COMEDY", false))
+                allIGUsers.addAll(comedylisti);
+            if (preferences.getBoolean("PHOTOS & ART", false))
+                allIGUsers.addAll(artlisti);
 
-        listView = (ObservableListView) getActivity().findViewById(R.id.list);
-        listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
-        listView.setAdapter(listAdapter);
-
-        List<URL> allIGUsers = new ArrayList<>();
-        if ((preferences.getBoolean("MUSIC", true)))
-            allIGUsers.addAll(musiclisti);
-        if (preferences.getBoolean("SPORTS", false))
-            allIGUsers.addAll(sportlisti);
-        if (preferences.getBoolean("CULTURE", false))
-            allIGUsers.addAll(culturelisti);
-        if (preferences.getBoolean("COMEDY", false))
-            allIGUsers.addAll(comedylisti);
-        if (preferences.getBoolean("PHOTOS & ART", false))
-            allIGUsers.addAll(artlisti);
-
-        new GetInstagramImagesAsync().execute(allIGUsers);
+            new GetInstagramImagesAsync().execute(allIGUsers);
     }
 
     @Override
