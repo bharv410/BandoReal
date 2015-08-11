@@ -16,6 +16,7 @@ import java.net.URLConnection;
 import java.util.Date;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.squareup.picasso.Picasso;
@@ -80,6 +82,7 @@ public class MyStuffFragment extends Fragment {
     public ActionBar mActionBar;
 
     private ProgressWheel pw;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /* current progress on progress bars */
     private int progress = 0;
@@ -113,14 +116,7 @@ public class MyStuffFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
         pw = (ProgressWheel) getActivity().findViewById(R.id.pw_spinner);
-        progress = 0;
-        totalForProg = 0;
-
-        pw.setVisibility(View.VISIBLE);
-        pw.spin();
-        pw.incrementProgress();
 
         if(listOfPostsThatAreInTheArrayToAvoidDuplicates==null){ //only restart list if null
             listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
@@ -128,21 +124,37 @@ public class MyStuffFragment extends Fragment {
             listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
             listView.setAdapter(listAdapter);
 
+            mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id._swipe_refresh_layout);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+                @Override
+                public void onRefresh() {
+                    refreshContent();
+                }
+            });
         }
-            List<URL> allIGUsers = new ArrayList<>();
-            if ((preferences.getBoolean("MUSIC", true)))
-                allIGUsers.addAll(musiclisti);
-            if (preferences.getBoolean("SPORTS", false))
-                allIGUsers.addAll(sportlisti);
-            if (preferences.getBoolean("CULTURE", false))
-                allIGUsers.addAll(culturelisti);
-            if (preferences.getBoolean("COMEDY", false))
-                allIGUsers.addAll(comedylisti);
-            if (preferences.getBoolean("PHOTOS & ART", false))
-                allIGUsers.addAll(artlisti);
-
-            new GetInstagramImagesAsync().execute(allIGUsers);
+            refreshContent();
     }
+    private void refreshContent(){
+        progress = 0;
+        totalForProg = 0;
+
+        pw.setVisibility(View.VISIBLE);
+        pw.spin();
+        pw.incrementProgress();
+
+        new GetInstagramImagesAsync().execute();
+        Handler handler = new Handler();
+
+        handler.postDelayed(new Runnable(){
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 2000);
+
+    }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -232,6 +244,7 @@ public class MyStuffFragment extends Fragment {
             gettingTwit = false;
             pw.stopSpinning();
             pw.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setRefreshing(false);
             //listView.setScrollViewCallbacks((MainActivity)getActivity());
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -394,9 +407,22 @@ public class MyStuffFragment extends Fragment {
         }
 
         protected List<JSONArray> doInBackground(List<URL>... urls) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences((MainActivity) getActivity());
+            List<URL> allIGUsers = new ArrayList<>();
+            if ((preferences.getBoolean("MUSIC", true)))
+                allIGUsers.addAll(musiclisti);
+            if (preferences.getBoolean("SPORTS", false))
+                allIGUsers.addAll(sportlisti);
+            if (preferences.getBoolean("CULTURE", false))
+                allIGUsers.addAll(culturelisti);
+            if (preferences.getBoolean("COMEDY", false))
+                allIGUsers.addAll(comedylisti);
+            if (preferences.getBoolean("PHOTOS & ART", false))
+                allIGUsers.addAll(artlisti);
+
             ArrayList<JSONArray> listOfIGUsersTimelines = new ArrayList<JSONArray>();
-            totalForProg = urls[0].size();
-            for (URL currentUrl : urls[0]) {
+            totalForProg = allIGUsers.size();
+            for (URL currentUrl : allIGUsers) {
                 try {
                     URLConnection tc = currentUrl.openConnection();
                     BufferedReader in = new BufferedReader(new InputStreamReader(
