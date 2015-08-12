@@ -66,5 +66,4 @@
             android:label="@string/title_activity_choose_categories" >
         </activity>
     </application>
-
 </manifest>

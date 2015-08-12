@@ -87,6 +87,7 @@ public class MyStuffFragment extends Fragment {
     /* current progress on progress bars */
     private int progress = 0;
     private int totalForProg = 0;
+    private int currentLoadedIndex = 0;
 
     private List<BandoPost> listOfPostsThatAreInTheArrayToAvoidDuplicates;
 
@@ -119,6 +120,7 @@ public class MyStuffFragment extends Fragment {
         pw = (ProgressWheel) getActivity().findViewById(R.id.pw_spinner);
 
         if(listOfPostsThatAreInTheArrayToAvoidDuplicates==null){ //only restart list if null
+            currentLoadedIndex = 0;
             listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
             listView = (ObservableListView) getActivity().findViewById(R.id.list);
             listAdapter = new FeedListAdapter(getActivity(), R.layout.feed_item, new ArrayList<BandoPost>());
@@ -135,6 +137,10 @@ public class MyStuffFragment extends Fragment {
             refreshContent();
     }
     private void refreshContent(){
+        currentLoadedIndex++;
+        if(currentLoadedIndex>2)
+            currentLoadedIndex=0;
+
         progress = 0;
         totalForProg = 0;
 
@@ -143,9 +149,8 @@ public class MyStuffFragment extends Fragment {
         pw.incrementProgress();
 
         new GetInstagramImagesAsync().execute();
-        Handler handler = new Handler();
 
-        handler.postDelayed(new Runnable(){
+        new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -212,7 +217,7 @@ public class MyStuffFragment extends Fragment {
                 for (String individualId : allTwitterUsers) {
                     progress++;
                     List<twitter4j.Status> statusesMeek = twitter.getUserTimeline(individualId, paging);
-                    twitter4j.Status firstStatus = statusesMeek.get(0);
+                    twitter4j.Status firstStatus = statusesMeek.get(currentLoadedIndex);
                     BandoPost bp = new BandoPost();
                     bp.setPostUrl("https://twitter.com/" + firstStatus.getUser().getScreenName()
                             + "/status/" + firstStatus.getId());
@@ -433,28 +438,29 @@ public class MyStuffFragment extends Fragment {
                         JSONObject ob = new JSONObject(line);
                         JSONArray js = ob.getJSONArray("data");
                         progress++;
-                        String theusername = "@" + js.getJSONObject(0).getJSONObject("user").getString("username");
-                        String thestandardImageUrl = js.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
+                        JSONObject currentIndexJSONObject = js.getJSONObject(currentLoadedIndex);
+                        String theusername = "@" + currentIndexJSONObject.getJSONObject("user").getString("username");
+                        String thestandardImageUrl = currentIndexJSONObject.getJSONObject("images").getJSONObject("low_resolution").getString("url");
 
 
-                        String link = js.getJSONObject(0).getString("link");
-                        String profilePic = js.getJSONObject(0).getJSONObject("user").getString("profile_picture");
+                        String link = currentIndexJSONObject.getString("link");
+                        String profilePic = currentIndexJSONObject.getJSONObject("user").getString("profile_picture");
 
                         BandoPost bp = new BandoPost();
                         bp.setPostUrl(link);
                         bp.setUsername(theusername);
                         bp.setPostSourceSite("instagram");
-                        if (js.getJSONObject(0).has("caption") && !js.getJSONObject(0).isNull("caption")) {
-                            bp.setPostText(js.getJSONObject(0).getJSONObject("caption").getString("text"));
+                        if (currentIndexJSONObject.has("caption") && !currentIndexJSONObject.isNull("caption")) {
+                            bp.setPostText(currentIndexJSONObject.getJSONObject("caption").getString("text"));
                         } else {
                             bp.setPostText("(No caption)");
                         }
                         bp.setPostType("instagram");
                         bp.setPostHasImage(true);
                         bp.setUserProfilePic(profilePic);
-                        bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(js.getJSONObject(0).getString("created_time"))).getTime(), getActivity()));
+                        bp.setDateString(Utils.getTimeAgo(new Date(Long.parseLong(currentIndexJSONObject.getString("created_time"))).getTime(), getActivity()));
                         bp.setImageUrl(thestandardImageUrl);
-                        bp.setDateTime(new Date((long) Long.parseLong(js.getJSONObject(0).getString("created_time")) * 1000));
+                        bp.setDateTime(new Date((long) Long.parseLong(currentIndexJSONObject.getString("created_time")) * 1000));
                         publishProgress(bp);
                     }
                 } catch (MalformedURLException e) {
