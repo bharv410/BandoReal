@@ -32,9 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 
+import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.squareup.picasso.Picasso;
-import com.todddavies.components.progressbar.ProgressWheel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,8 +62,8 @@ import twitter4j.conf.ConfigurationBuilder;
  * Created by benjamin.harvey on 8/4/15.
  */
 public class MyStuffFragment extends Fragment {
-    public static String TWITTER_CONSUMER_KEY = "hrMzn2Q8iTsK9bzrqwDfEHwlE";
-    public static String TWITTER_CONSUMER_SECRET = "CkWtGZ1zBPMOypbdwf3Q4EXCVABDeanuG3nM6nR6enLhHSnJge";
+    public static String TWITTER_CONSUMER_KEY = "QAM6jdb170hyMhJmMwoqbjRCg";
+    public static String TWITTER_CONSUMER_SECRET = "X70RAkYKUDtJH4Hpg5CizyvkJ7zZvrTFbAtOEjLkFQmoSdQ87i";
     static final String PREF_KEY_OAUTH_TOKEN = "oauth_token";
     static final String PREF_KEY_OAUTH_SECRET = "oauth_token_secret";
     private final String INSTYPREFIX_URL = "https://api.instagram.com/v1/users/";
@@ -81,7 +81,7 @@ public class MyStuffFragment extends Fragment {
 
     public ActionBar mActionBar;
 
-    private ProgressWheel pw;
+    //private AnimatedCircleLoadingView pw;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /* current progress on progress bars */
@@ -117,8 +117,8 @@ public class MyStuffFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        pw = (ProgressWheel) getActivity().findViewById(R.id.pw_spinner);
-
+//        pw = (AnimatedCircleLoadingView) getActivity().findViewById(R.id.circle_loading_view);
+//        pw.startDeterminate();
         if(listOfPostsThatAreInTheArrayToAvoidDuplicates==null){ //only restart list if null
             currentLoadedIndex = 0;
             listOfPostsThatAreInTheArrayToAvoidDuplicates = new ArrayList<>();
@@ -137,16 +137,14 @@ public class MyStuffFragment extends Fragment {
             refreshContent();
     }
     private void refreshContent(){
-        currentLoadedIndex++;
-        if(currentLoadedIndex>2)
-            currentLoadedIndex=0;
+//        currentLoadedIndex++;
+//        if(currentLoadedIndex>2)
+//            currentLoadedIndex=0;
 
         progress = 0;
         totalForProg = 0;
 
-        pw.setVisibility(View.VISIBLE);
-        pw.spin();
-        pw.incrementProgress();
+        //pw.setVisibility(View.VISIBLE);
 
         new GetInstagramImagesAsync().execute();
 
@@ -247,8 +245,13 @@ public class MyStuffFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             gettingTwit = false;
-            pw.stopSpinning();
-            pw.setVisibility(View.GONE);
+            //pw.setPercent(100);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //pw.setVisibility(View.GONE);
+                }
+            }, 5000);
             mSwipeRefreshLayout.setRefreshing(false);
             //listView.setScrollViewCallbacks((MainActivity)getActivity());
 
@@ -609,19 +612,8 @@ public class MyStuffFragment extends Fragment {
 
     private void postProgress() {
         int percent = (int) ((progress * 100.0f) / totalForProg);
-        pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();
-        pw.incrementProgress();
-        if(listAdapter.getCount()>20)
-            pw.setVisibility(View.INVISIBLE);
 
-
+        //pw.setPercent(percent);
 
     }
 }
