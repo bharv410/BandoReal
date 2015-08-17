@@ -26,6 +26,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.bandotheapp.bando.editprefences.AlarmReceiver;
 import com.bandotheapp.bando.editprefences.ChooseCategoriesActivity;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.ParseAnalytics;
 
 import java.util.Calendar;
@@ -49,6 +50,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
         setupActionBar();
@@ -99,6 +102,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     pendingIntent);
 
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     private void setupActionBar() {

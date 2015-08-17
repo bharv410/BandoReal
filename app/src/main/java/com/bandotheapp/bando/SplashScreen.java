@@ -6,35 +6,28 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 
 
-
-public class SplashScreen extends Activity {
+public class SplashScreen extends Activity  implements Animation.AnimationListener{
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 2000;
+    private static int SPLASH_TIME_OUT = 1000;
+
+    ImageView imgLogo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        new Handler().postDelayed(new Runnable() {
+        imgLogo = (ImageView)findViewById(R.id.imgLogo);
+        fallDownWordAnimation();
 
-            /*
-             * Showing splash screen with a timer. This will be useful when you
-             * want to show case your app logo / company
-             */
-
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                startActivity(i);
-
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
     }
 
     @Override
@@ -57,5 +50,52 @@ public class SplashScreen extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void fallDownWordAnimation() {
+
+        // define animation to be used
+        Animation animator = AnimationUtils.loadAnimation(
+                getApplicationContext(), R.anim.falldown);
+
+        // set animation listener
+        animator.setAnimationListener(this);
+
+        // start the animation
+        imgLogo.startAnimation(animator);
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+
+        new Handler().postDelayed(new Runnable() {
+
+            /*
+             * Showing splash screen with a timer. This will be useful when you
+             * want to show case your app logo / company
+             */
+
+            @Override
+            public void run() {
+                // This method will be executed once the timer is over
+                // Start your app main activity
+                Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                startActivity(i);
+
+                // close this activity
+                finish();
+            }
+        }, SPLASH_TIME_OUT);
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
     }
 }

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
@@ -56,6 +57,9 @@ public class ArticleDetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
+
+        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+
         pb5 = (ProgressBar)findViewById(R.id.progressBar5);
 
         mWebview  = (WebView)findViewById(R.id.webView);
@@ -128,6 +132,18 @@ public class ArticleDetailActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_article_detail, menu);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override

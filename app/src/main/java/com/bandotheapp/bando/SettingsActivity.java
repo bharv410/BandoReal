@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 
 import classes.InstagramApp;
 import classes.TwitterLogin;
@@ -50,6 +51,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
+        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
 
         listener = new InstagramApp.OAuthAuthenticationListener() {
             @Override
@@ -180,6 +183,18 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     public void connectToInstagram() {

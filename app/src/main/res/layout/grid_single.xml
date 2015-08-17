@@ -9,9 +9,11 @@
 	<com.bandotheapp.bando.SquareImageView
 		android:id="@+id/grid_image"
 		android:src="@drawable/progress_animation"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="0dp"
+		android:adjustViewBounds="true"
 		android:scaleType="centerCrop">
 	</com.bandotheapp.bando.SquareImageView>
 
