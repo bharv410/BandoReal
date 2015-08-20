@@ -32,9 +32,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void showNotifWithPostOrNah(Context context, String text) {
-        Intent deleteIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(contextg, 0, notificationIntent, 0);
         //building the notification
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.bandologo)
@@ -43,10 +43,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setTicker(text)
                 .setColor(Color.RED);
 
-        Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
+        mBuilder.setContentIntent(contentIntent);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         Random random = new Random();
         int m = random.nextInt(9999 - 1000) + 1000;
