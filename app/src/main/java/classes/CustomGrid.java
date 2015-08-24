@@ -93,7 +93,6 @@ public class CustomGrid extends ArrayAdapter<BandoPost> {
             textView.setText(bandoPosts.get(position).getPostText());
 
                 Picasso.with(mContext).load(bandoPosts.get(position).getImageUrl())
-                        .placeholder(R.drawable.progress_animation)
                         .into(imageView);
 
         } else {

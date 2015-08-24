@@ -25,6 +25,8 @@ import android.widget.Toast;
 import android.os.Handler;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
@@ -53,12 +55,15 @@ public class ArticleDetailActivity extends ActionBarActivity {
     ImageView imv;
     private WebView mWebview ;
 
+    private Tracker mTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
 
-        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+        MyApplication application = (MyApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         pb5 = (ProgressBar)findViewById(R.id.progressBar5);
 
@@ -137,7 +142,14 @@ public class ArticleDetailActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        mTracker.setScreenName("Article ");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("ArticleView")
+                .setAction(text)
+                .build());
     }
 
     @Override

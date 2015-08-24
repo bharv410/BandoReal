@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +28,8 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.bandotheapp.bando.editprefences.AlarmReceiver;
 import com.bandotheapp.bando.editprefences.ChooseCategoriesActivity;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseAnalytics;
 
 import java.util.Calendar;
@@ -45,12 +48,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public ActionBar mActionBar;
     public static boolean loggedInTwitter = false;
 
+    private Tracker mTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
+
+        // Obtain the shared Tracker instance.
+        MyApplication application = (MyApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
@@ -107,7 +115,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        Log.i("benmark", "Setting screen name: " + "MainActivity");
+        mTracker.setScreenName("MainActivity");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

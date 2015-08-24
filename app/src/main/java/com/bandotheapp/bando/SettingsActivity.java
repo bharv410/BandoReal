@@ -52,7 +52,6 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        ((MyApplication) getApplication()).getTracker(MyApplication.TrackerName.APP_TRACKER);
 
         listener = new InstagramApp.OAuthAuthenticationListener() {
             @Override
@@ -188,7 +187,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(getApplicationContext()).reportActivityStart(this);
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override

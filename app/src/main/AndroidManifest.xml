@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.bandotheapp.bando" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -16,39 +16,43 @@
     <!--
   IMPORTANT: Change "com.parse.tutorials.pushnotifications.permission.C2D_MESSAGE" in the lines below
   to match your app's package name + ".permission.C2D_MESSAGE".
--->
-    <permission android:protectionLevel="signature"
-                android:name="com.bandotheapp.bando.permission.C2D_MESSAGE" />
+    -->
+    <permission
+        android:name="com.bandotheapp.bando.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="com.bandotheapp.bando.permission.C2D_MESSAGE" />
 
-
-    <application tools:replace="android:theme,android:icon"
-        android:name="com.bandotheapp.bando.MyApplication"
-                 android:icon="@drawable/bandologo"
+    <application
+        android:name=".MyApplication"
         android:allowBackup="true"
+        android:icon="@drawable/bandologo"
         android:logo="@drawable/bandoheader"
-        android:theme="@style/CustomActionBarTheme" >
+        android:theme="@style/CustomActionBarTheme"
+        tools:replace="android:theme,android:icon" >
         <activity
-            android:name="com.bandotheapp.bando.MainActivity"
-            android:logo="@drawable/bandoheader">
+            android:name=".MainActivity"
+            android:logo="@drawable/bandoheader" >
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:logo="@drawable/bandoheader">
+            android:logo="@drawable/bandoheader" >
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.LoadingScreen"
+            android:name=".LoadingScreen"
             android:label="@string/app_name" >
         </activity>
+
         <receiver
-            android:name="com.bandotheapp.bando.editprefences.AlarmReceiver"
+            android:name=".editprefences.AlarmReceiver"
             android:exported="true" >
             <intent-filter>
                 <action android:name="com.bandotheapp.bando" >
                 </action>
             </intent-filter>
         </receiver>
+
         <activity
             android:name="classes.TwitterWebView"
             android:label="@string/app_name"
@@ -56,9 +60,9 @@
             android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.SplashScreen"
+            android:name=".SplashScreen"
             android:label="@string/title_activity_splash_screen"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -66,40 +70,42 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.ArticleDetailActivity"
+            android:name=".ArticleDetailActivity"
             android:label="@string/title_activity_article_detail"
-            android:logo="@drawable/bandoheader">
+            android:logo="@drawable/bandoheader" >
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.EditFeedActivity"
+            android:name=".EditFeedActivity"
             android:label="@string/title_activity_edit_feed"
-            android:logo="@drawable/bandoheader">
+            android:logo="@drawable/bandoheader" >
         </activity>
         <activity
-            android:name="com.bandotheapp.bando.editprefences.ChooseCategoriesActivity"
+            android:name=".editprefences.ChooseCategoriesActivity"
             android:label="@string/title_activity_choose_categories" >
         </activity>
 
         <service android:name="com.parse.PushService" />
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
+
+        <receiver android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
-                  android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-				  IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name.
-				-->
+<!-- 				  IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.bandotheapp.bando" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.ParsePushBroadcastReceiver" android:exported="false">
+        <receiver
+            android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />
@@ -110,10 +116,10 @@
         <!--
 		 Optionally, register AnalyticsReceiver and AnalyticsService to support background
 		 dispatching on non-Google Play devices
-	   -->
+        -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-            android:enabled="true">
+            android:enabled="true" >
             <intent-filter>
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
@@ -130,7 +136,7 @@
         -->
         <receiver
             android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
@@ -139,7 +145,14 @@
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
         <!-- Google Analytics Version v4 needs this value for easy tracking -->
-        <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
-                   android:resource="@xml/global_tracker" />
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/myglobaltracker" />
+
+        <activity
+            android:name=".BBTMActivity"
+            android:label="@string/title_activity_bbtm" >
+        </activity>
     </application>
+
 </manifest>

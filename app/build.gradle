@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 22
@@ -7,8 +8,8 @@ android {
         applicationId 'com.bandotheapp.bando'
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 21
-        versionName "1.0.21"
+        versionCode 28
+        versionName "1.0.28"
 
         multiDexEnabled true
     }

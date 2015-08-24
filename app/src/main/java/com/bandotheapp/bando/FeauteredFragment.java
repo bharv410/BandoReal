@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import android.support.v7.app.ActionBar;
 
 import classes.BandoPost;
+import classes.CustomGrid;
 import classes.Utils;
 
 /**
@@ -85,7 +86,7 @@ public class FeauteredFragment extends Fragment {
                         bp.setPostUrl(po.getString("postLink"));
                         bp.setPostSourceSite(po.getString("siteType"));
                         bp.setPostText(po.getString("postText"));
-                        bp.setPostType("article");
+                        bp.setPostType(po.getString("postType"));
                         bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
                         bp.setDateTime(po.getCreatedAt());
                         bp.setImageUrl(po.getString("imageUrl"));
@@ -107,7 +108,7 @@ public class FeauteredFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
                     pb.setVisibility(View.GONE);
@@ -134,7 +135,6 @@ public class FeauteredFragment extends Fragment {
                     if (e == null) {
                         isFeaturedHeaderSet = true;
                         Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl"))
-                                .placeholder(R.drawable.progress_animation)
                                 .into((ImageView) v.findViewById(R.id.imageViewHeader));
 
                         TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
@@ -145,17 +145,24 @@ public class FeauteredFragment extends Fragment {
                             final String postLink = objects.get(0).getString("postLink");
                             final String text = objects.get(0).getString("text");
                             final String imagePath = objects.get(0).getString("imageUrl");
-                            final String objectid = objects.get(0).getObjectId();
+                        final String objectid = objects.get(0).getObjectId();
+                        final String posttype = objects.get(0).getString("siteType");
                             v.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
-                                    browserIntent.putExtra("postLink", postLink);
-                                    browserIntent.putExtra("imagePath", imagePath);
-                                    browserIntent.putExtra("text", text);
-                                    browserIntent.putExtra("featured", true);
-                                    startActivity(browserIntent);
 
+                                    if (posttype.contains("special")){
+
+                                        startActivity(new Intent(getActivity(), BBTMActivity.class));
+
+                                    }else {
+                                        Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                                        browserIntent.putExtra("postLink", postLink);
+                                        browserIntent.putExtra("imagePath", imagePath);
+                                        browserIntent.putExtra("text", text);
+                                        browserIntent.putExtra("featured", true);
+                                        startActivity(browserIntent);
+                                    }
                                 }
                             });
                     } else {
@@ -232,11 +239,10 @@ public class FeauteredFragment extends Fragment {
                 if (!siteType.contains("article"))
                     holder.socialTextView.setText(siteType);
 
-                holder.title.setText(truncateAfteWords(9, postText));
+                holder.title.setText(truncateAfteWords(11, postText));
                 holder.dateTextView.setText(getItem(position).getDateString());
 
                 Picasso.with(mContext).load(current.getImageUrl())
-                        .placeholder(R.drawable.progress_animation)
                         .into(holder.thumbnail);
 
             holder.thumbnail.setOnClickListener(new View.OnClickListener() {
@@ -264,7 +270,7 @@ public class FeauteredFragment extends Fragment {
             if (m.hitEnd())
                 return s;
             else
-                return s.substring(0, m.end());
+                return s.substring(0, m.end()) + "...";
         }
     }
 

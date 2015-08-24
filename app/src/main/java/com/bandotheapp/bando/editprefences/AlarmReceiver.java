@@ -34,7 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void showNotifWithPostOrNah(Context context, String text) {
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(contextg, 0, notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
         //building the notification
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.bandologo)
