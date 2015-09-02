@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.bandotheapp.bando.com.bandotheapp.bando.libraryacti.LibraryActivity;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.bandotheapp.bando.editprefences.AlarmReceiver;
@@ -217,7 +218,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
             startActivity(Intent.createChooser(emailIntent, "Send email..."));
         return true;
-    }
+    }else if(id == R.id.action_library_item){
+            startActivity(new Intent(getApplicationContext(), LibraryActivity.class));
+        }
         return super.onOptionsItemSelected(item);
     }
 

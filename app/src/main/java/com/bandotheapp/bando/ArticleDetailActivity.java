@@ -3,6 +3,7 @@ package com.bandotheapp.bando;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -23,7 +24,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.bandotheapp.bando.com.bandotheapp.bando.libraryacti.TinyDB;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -40,6 +52,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -233,17 +247,23 @@ public class ArticleDetailActivity extends ActionBarActivity {
     public void bookmark(View v){
 Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show();
         trackSomething("bookmark", "bookmark");
+
+        TinyDB tinydb = new TinyDB(getApplicationContext());
+
+        tinydb.putString(text, text);
+
     }
 
     public void share(View v){
         trackSomething("share", "share");
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" +getIntent().getStringExtra("text")+"\"" +" via @bandotheapp");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" +getIntent().getStringExtra("text") + "\"" + " via @bandotheapp");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
-    private void updateCount(){
+
+    private void updateCount() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.whereEqualTo("postText", text);
         query.findInBackground(new FindCallback<ParseObject>() {

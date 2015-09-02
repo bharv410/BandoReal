@@ -98,11 +98,10 @@
 
 		<ImageView
 			android:id="@+id/feedImage1"
-			android:layout_width="180dp"
+			android:layout_width="fill_parent"
 			android:layout_height="180dp"
-			android:layout_marginLeft="40dp"
 			android:background="@color/white"
-			android:scaleType="fitXY"
+			android:scaleType="fitCenter"
 			android:visibility="visible" />
 
 	</LinearLayout>

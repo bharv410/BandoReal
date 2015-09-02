@@ -14,4 +14,8 @@
 		  android:title="Feedback"
 		  android:orderInCategory="100"
 		  app:showAsAction="never"/>
+	<item android:id="@+id/action_library_item"
+		  android:title="Saved Articles"
+		  android:orderInCategory="100"
+		  app:showAsAction="never"/>
 </menu>

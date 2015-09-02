@@ -15,7 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -100,17 +103,24 @@ public class FeauteredFragment extends Fragment {
                     adapter = new CustomGrid(getActivity(), bandoArray);
                     gridViewWithHeader = (MyObservableGridView) getActivity().findViewById(R.id.grid);
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+
+                    View footerView = layoutInflater.inflate(R.layout.featuredfooter, null);
+                    setFooter(footerView);
+
                     View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
                     setHeader(headerView);
+
+
                     gridViewWithHeader.setAdapter(adapter);
                     gridViewWithHeader.setScrollViewCallbacks((MainActivity) getActivity());
                     gridViewWithHeader.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bandoArray.get(position).getPostUrl())));
                         }
                     });
+
                     pb.setVisibility(View.GONE);
                 } else {
                     Log.v("benmark", "code = " + String.valueOf(e.getCode()));
@@ -122,6 +132,18 @@ public class FeauteredFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    private void setFooter(final View footerV) {
+        gridViewWithHeader.addFooterView(footerV, null, true);
+
+        TextView btn1 = (TextView)footerV.findViewById(R.id.footer_1);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gridViewWithHeader.smoothScrollToPosition(0);
+            }
+        });
     }
 
     private void setHeader(final View v) {

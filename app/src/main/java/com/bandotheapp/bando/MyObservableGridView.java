@@ -203,38 +203,6 @@ public class MyObservableGridView extends CustomGridViewWithHeader implements Sc
         return super.onTouchEvent(ev);
     }
 
-    public void addFooterView(View v) {
-        addFooterView(v, null, true);
-    }
-
-    public void addFooterView(View v, Object data, boolean isSelectable) {
-        ListAdapter mAdapter = getAdapter();
-        if (mAdapter != null && !(mAdapter instanceof HeaderViewGridAdapter)) {
-            throw new IllegalStateException(
-                    "Cannot add header view to gridViewWithHeader -- setAdapter has already been called.");
-        }
-
-        ViewGroup.LayoutParams lyp = v.getLayoutParams();
-
-        FixedViewInfo info = new FixedViewInfo();
-        FrameLayout fl = new FullWidthFixedViewLayout(getContext());
-
-        if (lyp != null) {
-            v.setLayoutParams(new FrameLayout.LayoutParams(lyp.width, lyp.height));
-            fl.setLayoutParams(new AbsListView.LayoutParams(lyp.width, lyp.height));
-        }
-        fl.addView(v);
-        info.view = v;
-        info.viewContainer = fl;
-        info.data = data;
-        info.isSelectable = isSelectable;
-        mFooterViewInfos.add(info);
-
-        if (mAdapter != null) {
-            ((HeaderViewGridAdapter) mAdapter).notifyDataSetChanged();
-        }
-    }
-
     public boolean removeFooterView(View v) {
         if (mFooterViewInfos.size() > 0) {
             boolean result = false;

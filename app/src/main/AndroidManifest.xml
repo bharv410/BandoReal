@@ -99,7 +99,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-<!-- 				  IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
+                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.bandotheapp.bando" />
             </intent-filter>
         </receiver>
@@ -152,6 +152,10 @@
         <activity
             android:name=".BBTMActivity"
             android:label="@string/title_activity_bbtm" >
+        </activity>
+        <activity
+            android:name=".com.bandotheapp.bando.libraryacti.LibraryActivity"
+            android:label="@string/title_activity_library" >
         </activity>
     </application>
 
