@@ -102,6 +102,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
+        actionBar.setHomeButtonEnabled(true);
 
         SpannableString s = new SpannableString("Bando");
 

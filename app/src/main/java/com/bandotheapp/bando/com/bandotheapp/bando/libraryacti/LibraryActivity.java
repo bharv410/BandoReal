@@ -2,7 +2,10 @@ package com.bandotheapp.bando.com.bandotheapp.bando.libraryacti;
 
 import java.util.Locale;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +24,7 @@ import android.widget.TextView;
 
 import com.bandotheapp.bando.R;
 
-public class LibraryActivity extends AppCompatActivity {
+public class LibraryActivity extends ActionBarActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -51,7 +55,12 @@ public class LibraryActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        getSupportActionBar().setTitle("Library");
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle("Saved Articles");
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#168807")));
     }
 
 

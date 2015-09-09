@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bandotheapp.bando.ArticleDetailActivity;
+import com.bandotheapp.bando.BBTMActivity;
 import com.bandotheapp.bando.MainActivity;
 import com.bandotheapp.bando.MyObservableGridView;
 import com.bandotheapp.bando.R;
@@ -103,16 +106,48 @@ private void refreshContent() {
     }
 
     private void getVerifiedPosts() {
+        final TinyDB tinydb = new TinyDB(getActivity());
+
+        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("BandoFeaturedPost");
+        query1.addDescendingOrder("createdAt");
+
+        query1.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject po : objects) {
+                        if (tinydb.getString(po.getString("text")).contains(po.getString("text"))) {
+                            BandoPost bp = new BandoPost();
+                            bp.setPostUrl(po.getString("postLink"));
+                            bp.setPostSourceSite(po.getString("siteType"));
+                            bp.setPostText(po.getString("text"));
+                            bp.setPostType("twitter");//benmark
+                            bp.setDateString(Utils.getTimeAgo(po.getCreatedAt().getTime(), getActivity()));
+                            bp.setDateTime(po.getCreatedAt());
+                            bp.setImageUrl(po.getString("imageUrl"));
+                            bp.setUniqueId(po.getObjectId());
+                            bp.setViewCOunt(po.getInt("viewCount"));
+                            bp.setPostHasImage(true);
+                            if (!listOfPostsThatAreInTheArrayToAvoidDuplicates.contains(bp)) {
+                                listOfPostsThatAreInTheArrayToAvoidDuplicates.add(bp);
+                            }
+                        }
+                    }
+
+                }
+            }
+        });
+
+
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
         query.addDescendingOrder("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    TinyDB tinydb = new TinyDB(getActivity());
 
                     for (ParseObject po : objects) {
-                        if(tinydb.getString(po.getString("postText")).contains(po.getString("postText"))){
-                            Log.v("benmark", "!!!!" + po.getString("postLink") );
+                        if (tinydb.getString(po.getString("postText")).contains(po.getString("postText"))) {
+                            Log.v("benmark", "!!!!" + po.getString("postLink"));
                             BandoPost bp = new BandoPost();
                             bp.setPostUrl(po.getString("postLink"));
                             bp.setPostSourceSite(po.getString("siteType"));
@@ -138,7 +173,14 @@ private void refreshContent() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(listOfPostsThatAreInTheArrayToAvoidDuplicates.get(position).getPostUrl())));
+                            //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(listOfPostsThatAreInTheArrayToAvoidDuplicates.get(position).getPostUrl())));
+                            Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                            browserIntent.putExtra("postLink", listOfPostsThatAreInTheArrayToAvoidDuplicates.get(position).getPostUrl());
+                            browserIntent.putExtra("imagePath", listOfPostsThatAreInTheArrayToAvoidDuplicates.get(position).getImageUrl());
+                            browserIntent.putExtra("text", listOfPostsThatAreInTheArrayToAvoidDuplicates.get(position).getPostText());
+                            browserIntent.putExtra("featured", false);
+                            startActivity(browserIntent);
+
                         }
                     });
                 } else {
@@ -146,7 +188,11 @@ private void refreshContent() {
                 }
             }
         });
+
+
     }
+
+
 
     private static class ViewHolder {
         public ImageView thumbnail;
@@ -216,18 +262,24 @@ private void refreshContent() {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(item.getPostUrl()));
-                    startActivity(i);
+                    Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                    browserIntent.putExtra("postLink", item.getPostUrl());
+                    browserIntent.putExtra("imagePath", item.getImageUrl());
+                    browserIntent.putExtra("text", item.getPostText());
+                    browserIntent.putExtra("featured", false);
+                    startActivity(browserIntent);
                 }
             });
 
             profilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(item.getPostUrl()));
-                    startActivity(i);
+                    Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
+                    browserIntent.putExtra("postLink", item.getPostUrl());
+                    browserIntent.putExtra("imagePath", item.getImageUrl());
+                    browserIntent.putExtra("text", item.getPostText());
+                    browserIntent.putExtra("featured", false);
+                    startActivity(browserIntent);
                 }
             });
 
