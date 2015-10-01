@@ -157,6 +157,14 @@
             android:name=".com.bandotheapp.bando.libraryacti.LibraryActivity"
             android:label="@string/title_activity_library" >
         </activity>
+        <activity
+            android:name=".SearchResults"
+            android:label="@string/title_activity_search_results" >
+        </activity>
+        <activity
+            android:name=".FindersFirstActivity"
+            android:label="@string/title_activity_finders_first" >
+        </activity>
     </application>
 
 </manifest>

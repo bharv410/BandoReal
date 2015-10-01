@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@color/feed_bg"
+				tools:context="com.bandotheapp.bando.SearchResults">
+	<com.bandotheapp.bando.MyObservableGridView
+		android:numColumns="2"
+		android:gravity="center"
+		android:columnWidth="100dp"
+		android:stretchMode="columnWidth"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:background="#CCd3d3d3"
+		android:id="@+id/gridSearch"
+		android:horizontalSpacing="2dp"
+		android:verticalSpacing="2dp"
+		/>
+</RelativeLayout>

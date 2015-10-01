@@ -186,6 +186,7 @@ public class MyStuffFragment extends Fragment {
             builder.setOAuthConsumerKey(TWITTER_CONSUMER_KEY);
             builder.setOAuthConsumerSecret(TWITTER_CONSUMER_SECRET);
 
+
             SharedPreferences mSharedPreferences = getActivity().getApplicationContext().getSharedPreferences(
                     "twitter_login", Activity.MODE_PRIVATE);
 
@@ -235,8 +236,8 @@ public class MyStuffFragment extends Fragment {
                     bp.setDateTime(firstStatus.getCreatedAt());
                     publishProgress(bp);
                 }
-            } catch (TwitterException tw) {
-
+            } catch (Exception tw) {
+                Log.v("benmark", "important exception = " + tw.getLocalizedMessage());
             }
 
             return null;

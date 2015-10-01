@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="@dimen/activity_horizontal_margin"
+				android:paddingRight="@dimen/activity_horizontal_margin"
+				android:paddingTop="@dimen/activity_vertical_margin"
+				android:paddingBottom="@dimen/activity_vertical_margin"
+				tools:context="com.bandotheapp.bando.FindersFirstActivity">
+
+	<TextView
+		android:text="The Finder's First Program from Bando congratulates users on being the early finders to new content. We like to recognize users who both share articles first as well as read articles first.\n\n
+
+Users who are in the top 10% of readers who share a Bando article will receive an update notification that they're one of the first people to know. If you're one of the first readers for a Bando article you'll see an 'Early Find' notification.\n\n
+
+Continue to break the news to your friends first through Bando.\n\n"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/moreTextViewff"
+		android:layout_marginTop="20dp"
+		android:layout_below="@+id/headerTextViewff"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"/>
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@android:color/darker_gray"
+		android:layout_above="@+id/moreTextViewff"
+		android:layout_alignParentLeft="true"
+		android:layout_marginRight="20dp"
+		android:layout_alignParentStart="true"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="Finders First"
+		android:layout_marginTop="20dp"
+		android:textSize="34sp"
+		android:textColor="#666666"
+		android:textStyle="bold"
+		android:id="@+id/headerTextViewff"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"/>
+
+</RelativeLayout>

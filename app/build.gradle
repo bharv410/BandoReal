@@ -6,10 +6,10 @@ android {
     buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId 'com.bandotheapp.bando'
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 22
-        versionCode 32
-        versionName "1.0.32"
+        versionCode 34
+        versionName "1.0.34"
 
         multiDexEnabled true
     }

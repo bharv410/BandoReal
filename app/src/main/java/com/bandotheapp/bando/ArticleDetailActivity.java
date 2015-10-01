@@ -1,9 +1,12 @@
 package com.bandotheapp.bando;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.view.animation.Animation.AnimationListener;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +20,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -24,15 +30,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.bandotheapp.bando.com.bandotheapp.bando.libraryacti.TinyDB;
@@ -69,6 +66,8 @@ public class ArticleDetailActivity extends ActionBarActivity {
     ImageView imv;
     private WebView mWebview ;
 
+    private ImageView earlyFindImageView;
+    private TextView helpTextView;
     private Tracker mTracker;
 
     @Override
@@ -81,8 +80,35 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
         pb5 = (ProgressBar)findViewById(R.id.progressBar5);
 
-        mWebview  = (WebView)findViewById(R.id.webView);
-        viewCountTV = (TextView)findViewById(R.id.viewCountTextView);
+        earlyFindImageView = (ImageView)findViewById(R.id.earlyFinderImageView);
+        earlyFindImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), FindersFirstActivity.class));
+            }
+        });
+        helpTextView = (TextView)findViewById(R.id.helpTextView);
+        helpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), FindersFirstActivity.class));
+            }
+        });
+        if(getIntent().getIntExtra("viewCount",10)<10){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    fadeOutAndHideImage(earlyFindImageView);
+                }
+            }, 2000);
+        } else {
+            earlyFindImageView.setVisibility(View.GONE);
+            helpTextView.setVisibility(View.GONE);
+        }
+
+        mWebview = (WebView) findViewById(R.id.webView);
+        viewCountTV = (TextView) findViewById(R.id.viewCountTextView);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/ptsansb.ttf");
         viewCountTV.setTypeface(custom_font);
         viewCountTV.setText(String.valueOf(getIntent().getIntExtra("viewCount", 33)));
@@ -182,6 +208,7 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }else
             finish();
@@ -256,10 +283,20 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
     }
 
     public void share(View v){
+        if(getIntent().getIntExtra("viewCount",10)<5){
+            Notification noti = new Notification.Builder(getApplicationContext())
+                    .setContentTitle("You are the first to share this article!")
+                    .setContentText("Congrats from Bando")
+                    .setSmallIcon(R.drawable.bandologo)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(12,noti);
+        }
+
         trackSomething("share", "share");
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" +getIntent().getStringExtra("text") + "\"" + " via @bandotheapp");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "\"" + getIntent().getStringExtra("text") + "\"" + " via @bandotheapp");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
@@ -299,9 +336,9 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
                     for (ParseObject po : list) {
-                            po.put("viewCount", (int)po.get("viewCount")+1);
-                            po.saveInBackground();
-                            Log.v("benmark", "updated " + text + "\n touvl" + po.get("viewCount"));
+                        po.put("viewCount", (int) po.get("viewCount") + 1);
+                        po.saveInBackground();
+                        Log.v("benmark", "updated " + text + "\n touvl" + po.get("viewCount"));
                         if (viewCountTV != null)
                             viewCountTV.setText(String.valueOf((int) po.get("viewCount") + 1));
                     }
@@ -310,5 +347,35 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
                 }
             }
         });
+    }
+
+    private void fadeOutAndHideImage(final ImageView img)
+    {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Animation fadeOut = new AlphaAnimation(1, 0);
+                fadeOut.setInterpolator(new AccelerateInterpolator());
+                fadeOut.setDuration(1500);
+
+                fadeOut.setAnimationListener(new AnimationListener() {
+                    public void onAnimationEnd(Animation animation) {
+                        img.setVisibility(View.GONE);
+                        helpTextView.setVisibility(View.GONE);
+                    }
+
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+
+                    public void onAnimationStart(Animation animation) {
+                    }
+                });
+
+                img.startAnimation(fadeOut);
+
+
+            }
+        }, 300);
     }
 }

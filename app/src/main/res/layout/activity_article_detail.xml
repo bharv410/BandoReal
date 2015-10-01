@@ -75,4 +75,21 @@
 		android:visibility="visible"
 		android:layout_centerVertical="true"
 		android:layout_centerHorizontal="true"/>
+
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/earlyfinder"
+		android:id="@+id/earlyFinderImageView"
+		android:layout_centerVertical="true"
+		android:layout_centerHorizontal="true"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:text="What is this?"
+		android:id="@+id/helpTextView"
+		android:layout_below="@+id/earlyFinderImageView"
+		android:layout_centerHorizontal="true"/>
 </RelativeLayout>

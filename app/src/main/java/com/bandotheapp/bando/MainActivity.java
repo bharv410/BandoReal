@@ -9,11 +9,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -21,6 +23,8 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.support.v7.widget.SearchView;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.bandotheapp.bando.com.bandotheapp.bando.libraryacti.LibraryActivity;
@@ -51,11 +55,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     private Tracker mTracker;
 
+    private SearchView mSearchView;
+    FeauteredFragment fragmentWithSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentWithSearch = new FeauteredFragment();
 
         // Obtain the shared Tracker instance.
         MyApplication application = (MyApplication) getApplication();
@@ -155,7 +163,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mstyled.recycle();
 
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getApplicationContext());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getApplicationContext(), fragmentWithSearch);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
@@ -199,29 +207,40 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        mSearchView.setOnQueryTextListener(fragmentWithSearch);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-            return true;
-        } else if (id == R.id.action_feed_item) {
-            startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
-            return true;
-        } else if (id == R.id.action_feedback_item) {
-            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                    "mailto", "contactbando@gmail.com", null));
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Bando Feedback");
-            emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
-            startActivity(Intent.createChooser(emailIntent, "Send email..."));
-        return true;
-    }else if(id == R.id.action_library_item){
-            startActivity(new Intent(getApplicationContext(), LibraryActivity.class));
+
+        switch (id) {
+            case R.id.action_search:
+                mSearchView.setIconified(false);
+                return true;
+            case R.id.action_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.action_feed_item:
+                startActivity(new Intent(getApplicationContext(), ChooseCategoriesActivity.class));
+                return true;
+            case R.id.action_feedback_item:
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", "contactbando@gmail.com", null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Bando Feedback");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                return true;
+            case R.id.action_library_item:
+                startActivity(new Intent(getApplicationContext(), LibraryActivity.class));
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -230,6 +249,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mSearchView.isIconified()) {
+            mSearchView.setIconified(true);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

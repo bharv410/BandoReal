@@ -1,5 +1,6 @@
 package com.bandotheapp.bando;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -13,12 +14,11 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.support.v7.widget.SearchView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.support.v7.app.ActionBar;
+import android.widget.Toast;
 
 import classes.BandoPost;
 import classes.CustomGrid;
@@ -43,7 +44,7 @@ import classes.Utils;
 /**
  * Created by benjamin.harvey on 8/4/15.
  */
-public class FeauteredFragment extends Fragment {
+public class FeauteredFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     MyObservableGridView gridViewWithHeader;
     CustomGrid adapter;
@@ -52,6 +53,8 @@ public class FeauteredFragment extends Fragment {
     public ActionBar mActionBar;
 
     ProgressBar pb;
+
+    View retainHeaderView;
 
     boolean isFeaturedHeaderSet = false;
 
@@ -107,8 +110,8 @@ public class FeauteredFragment extends Fragment {
                     View footerView = layoutInflater.inflate(R.layout.featuredfooter, null);
                     setFooter(footerView);
 
-                    View headerView = layoutInflater.inflate(R.layout.featuredsquare, null);
-                    setHeader(headerView);
+                    retainHeaderView = layoutInflater.inflate(R.layout.featuredsquare, null);
+                    setHeader();
 
 
                     gridViewWithHeader.setAdapter(adapter);
@@ -146,9 +149,9 @@ public class FeauteredFragment extends Fragment {
         });
     }
 
-    private void setHeader(final View v) {
+    private void setHeader() {
         if (!isFeaturedHeaderSet) {
-            gridViewWithHeader.addHeaderView(v, null, true);
+            gridViewWithHeader.addHeaderView(retainHeaderView, null, true);
             ParseQuery<ParseObject> query = ParseQuery.getQuery("BandoFeaturedPost");
             query.addDescendingOrder("createdAt");
 
@@ -157,7 +160,7 @@ public class FeauteredFragment extends Fragment {
                     if (e == null) {
                         isFeaturedHeaderSet = true;
                         Picasso.with(getActivity()).load(objects.get(0).getString("imageUrl"))
-                                .into((ImageView) v.findViewById(R.id.imageViewHeader));
+                                .into((ImageView) retainHeaderView.findViewById(R.id.imageViewHeader));
 
                         TextView featuredText = (TextView) getActivity().findViewById(R.id.featuredTextView);
                         Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ptsansb.ttf");
@@ -167,9 +170,10 @@ public class FeauteredFragment extends Fragment {
                             final String postLink = objects.get(0).getString("postLink");
                             final String text = objects.get(0).getString("text");
                             final String imagePath = objects.get(0).getString("imageUrl");
+                        final int viewCOunt = objects.get(0).getInt("viewCount");
                         final String objectid = objects.get(0).getObjectId();
                         final String posttype = objects.get(0).getString("siteType");
-                            v.setOnClickListener(new View.OnClickListener() {
+                            retainHeaderView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
@@ -180,6 +184,7 @@ public class FeauteredFragment extends Fragment {
                                     }else {
                                         Intent browserIntent = new Intent(getActivity(), ArticleDetailActivity.class);
                                         browserIntent.putExtra("postLink", postLink);
+                                        browserIntent.putExtra("viewCount", viewCOunt);
                                         browserIntent.putExtra("imagePath", imagePath);
                                         browserIntent.putExtra("text", text);
                                         browserIntent.putExtra("featured", true);
@@ -300,5 +305,30 @@ public class FeauteredFragment extends Fragment {
         public ImageView thumbnail;
         public TextView title,dateTextView,socialTextView;
         public int position;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        Intent intent = new Intent(getActivity(), SearchResults.class);
+        intent.putExtra("searchThis", s);
+        startActivity(intent);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+
+        return false;
+    }
+
+    public void hide_keyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if(view == null) {
+            view = new View(activity);
+        }
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

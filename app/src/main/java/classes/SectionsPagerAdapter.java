@@ -15,10 +15,12 @@ import java.util.Locale;
  * Created by benjamin.harvey on 8/5/15.
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
-Context context;
-    public SectionsPagerAdapter(FragmentManager fm, Context ctx) {
+    private Context context;
+    private FeauteredFragment fragmentWithSearch;
+    public SectionsPagerAdapter(FragmentManager fm, Context ctx, FeauteredFragment ff) {
         super(fm);
         this.context = ctx;
+        this.fragmentWithSearch = ff;
     }
 
     @Override
@@ -27,9 +29,9 @@ Context context;
             case 1:
                 return new MyStuffFragment();
             case 0:
-                return new FeauteredFragment();
+                return fragmentWithSearch;
             default:
-                return new FeauteredFragment();
+                return fragmentWithSearch;
         }
     }
 
