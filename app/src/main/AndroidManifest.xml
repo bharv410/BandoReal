@@ -33,6 +33,19 @@
         <activity
             android:name=".MainActivity"
             android:logo="@drawable/bandoheader" >
+
+            <intent-filter android:label="View Article">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data android:scheme="http"
+                      android:host="www.thebandoapp.com"
+                      android:pathPrefix="/article" />
+                <!-- note that the leading "/" is required for pathPrefix-->
+				<data android:scheme="thebandoapp"
+					  android:host="article" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".SettingsActivity"

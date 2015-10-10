@@ -8,8 +8,8 @@ android {
         applicationId 'com.bandotheapp.bando'
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 34
-        versionName "1.0.34"
+        versionCode 36
+        versionName "1.0.36"
 
         multiDexEnabled true
     }
@@ -39,4 +39,5 @@ dependencies {
     compile 'com.github.jlmd:AnimatedCircleLoadingView:1.1@aar'
     compile 'com.android.support:support-v4:+'
     compile 'com.google.android.gms:play-services-analytics:7.3.0'
+    compile 'tyrantgit:explosionfield:1.0.0'
 }

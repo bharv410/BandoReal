@@ -35,14 +35,21 @@ import com.bandotheapp.bando.editprefences.ChooseCategoriesActivity;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import classes.BandoPost;
 import classes.CustomTypefaceSpan;
 import classes.SectionsPagerAdapter;
+import classes.Utils;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, ObservableScrollViewCallbacks {
@@ -74,6 +81,36 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         setupActionBar();
 
         setMorningAlarm();
+
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+
+        if (data != null) {
+            String[] parts = data.toString().split("/");
+            for(String s : parts){
+                Log.v("benmark", s);
+            }
+            String postId = parts[parts.length-1];
+            Log.v("benmark", postId);
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("VerifiedBandoPost");
+            query.addDescendingOrder("createdAt");
+            query.whereEqualTo("postId", Integer.parseInt(postId));
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
+                        for (ParseObject po : objects) {
+                            Intent browserIntent = new Intent(getApplicationContext(), ArticleDetailActivity.class);
+                            browserIntent.putExtra("postLink", po.getString("postLink"));
+                            browserIntent.putExtra("imagePath", po.getString("imageUrl"));
+                            browserIntent.putExtra("text", po.getString("postText"));
+                            browserIntent.putExtra("featured", false);
+                            startActivity(browserIntent);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void trackSomething(String trackThis, String withExtra){

@@ -14,19 +14,55 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import tyrantgit.explosionfield.ExplosionField;
+
 
 public class SplashScreen extends Activity  implements Animation.AnimationListener{
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1000;
 
-    ImageView imgLogo;
+    private ImageView imgLogo;
+    private ExplosionField explosionField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
-        fallDownWordAnimation();
+        //fallDownWordAnimation();
+
+        explosionField = ExplosionField.attach2Window(this);
+
+        new Handler().postDelayed(new Runnable() {
+
+            /*
+             * Showing splash screen with a timer. This will be useful when you
+             * want to show case your app logo / company
+             */
+
+            @Override
+            public void run() {
+                explosionField.explode(imgLogo);
+                new Handler().postDelayed(new Runnable() {
+
+            /*
+             * Showing splash screen with a timer. This will be useful when you
+             * want to show case your app logo / company
+             */
+
+                    @Override
+                    public void run() {
+                        // This method will be executed once the timer is over
+                        // Start your app main activity
+                        Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                        startActivity(i);
+
+                        // close this activity
+                        finish();
+                    }
+                }, SPLASH_TIME_OUT);
+            }
+        }, SPLASH_TIME_OUT);
 
     }
 
