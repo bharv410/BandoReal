@@ -33,6 +33,8 @@ import android.os.Handler;
 import java.util.List;
 
 import com.bandotheapp.bando.com.bandotheapp.bando.libraryacti.TinyDB;
+import com.bandotheapp.bando.comments.Comment;
+import com.bandotheapp.bando.comments.CommentsActivity;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -55,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.InjectView;
 import classes.CustomTypefaceSpan;
 
 
@@ -68,12 +71,27 @@ public class ArticleDetailActivity extends ActionBarActivity {
 
     private ImageView earlyFindImageView;
     private TextView helpTextView;
+
+
+    TextView commentsTextView;
+
     private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
+
+        commentsTextView = (TextView)findViewById(R.id.commentstextView);
+
+        commentsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent  i = new Intent(getApplicationContext(), CommentsActivity.class);
+                i.putExtra("key",getIntent().getStringExtra("text"));
+                startActivity(i);
+            }
+        });
 
         MyApplication application = (MyApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -94,7 +112,9 @@ public class ArticleDetailActivity extends ActionBarActivity {
                 startActivity(new Intent(getApplicationContext(), FindersFirstActivity.class));
             }
         });
-        if(getIntent().getIntExtra("viewCount",10)<10){
+        TinyDB db = new TinyDB(getApplicationContext());
+
+        if(getIntent().getIntExtra("viewCount",10)<10 && (db.getString(getIntent().getStringExtra("text"))==null || db.getString(getIntent().getStringExtra("text")).length()<1)){
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -102,6 +122,8 @@ public class ArticleDetailActivity extends ActionBarActivity {
                     fadeOutAndHideImage(earlyFindImageView);
                 }
             }, 2000);
+
+            db.putString(getIntent().getStringExtra("text"),getIntent().getStringExtra("text"));
         } else {
             earlyFindImageView.setVisibility(View.GONE);
             helpTextView.setVisibility(View.GONE);
@@ -178,6 +200,14 @@ public class ArticleDetailActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_article_detail, menu);
         return true;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateCommentCount();
     }
 
     @Override
@@ -377,5 +407,22 @@ Toast.makeText(getApplicationContext(), "Bookmarked!", Toast.LENGTH_LONG).show()
 
             }
         }, 300);
+    }
+
+    public void updateCommentCount() {
+        ParseQuery<Comment> woodwinds = ParseQuery.getQuery(Comment.class);
+        woodwinds.whereEqualTo("key", getIntent().getStringExtra("text"));
+        woodwinds.findInBackground(new FindCallback<Comment>() {
+            public void done(List<Comment> instruments, ParseException exception) {
+
+                if (exception == null) {
+                    commentsTextView.setText("Comments (" + String.valueOf(instruments.size()) +")");
+                } else {
+                    exception.printStackTrace();
+                    Log.v("benmark", exception.getMessage());
+                }
+
+            }
+        });
     }
 }

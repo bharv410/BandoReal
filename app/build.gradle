@@ -40,4 +40,11 @@ dependencies {
     compile 'com.android.support:support-v4:+'
     compile 'com.google.android.gms:play-services-analytics:7.3.0'
     compile 'tyrantgit:explosionfield:1.0.0'
+
+    //from instamaterail
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton.timber:timber:2.5.1'
+    compile 'com.facebook.rebound:rebound:0.3.6'
+    compile 'com.squareup.picasso:picasso:2.5.0'
+    compile 'com.android.support:design:22.2.0'
 }

@@ -22,6 +22,8 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.bandotheapp.bando.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:name=".MyApplication"
@@ -33,18 +35,20 @@
         <activity
             android:name=".MainActivity"
             android:logo="@drawable/bandoheader" >
-
-            <intent-filter android:label="View Article">
+            <intent-filter android:label="View Article" >
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data android:scheme="http"
-                      android:host="www.thebandoapp.com"
-                      android:pathPrefix="/article" />
-                <!-- note that the leading "/" is required for pathPrefix-->
-				<data android:scheme="thebandoapp"
-					  android:host="article" />
+                <data
+                    android:host="www.thebandoapp.com"
+                    android:pathPrefix="/article"
+                    android:scheme="http" />
+                <!-- note that the leading "/" is required for pathPrefix -->
+                <data
+                    android:host="article"
+                    android:scheme="thebandoapp" />
             </intent-filter>
         </activity>
         <activity
@@ -177,6 +181,14 @@
         <activity
             android:name=".FindersFirstActivity"
             android:label="@string/title_activity_finders_first" >
+        </activity>
+        <activity
+            android:name=".comments.CommentsActivity"
+            android:label="@string/title_activity_comments" >
+        </activity>
+        <activity
+            android:name=".comments.LoginActivity"
+            android:label="@string/title_activity_login" >
         </activity>
     </application>
 

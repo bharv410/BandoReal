@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
+
+        <ImageView
+        android:id="@+id/ivUserAvatar"
+        android:layout_width="@dimen/comment_avatar_size"
+        android:layout_height="@dimen/comment_avatar_size"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/img_circle_placeholder" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Username"
+            android:textColor="@color/material_blue_grey_900"
+            android:id="@+id/usernametextView"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/ivUserAvatar"
+            android:layout_toEndOf="@+id/ivUserAvatar"/>
+
+        <TextView
+            android:id="@+id/tvComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lorem ipsum dolor sit amet"
+            android:layout_below="@+id/usernametextView"
+            android:layout_toRightOf="@+id/ivUserAvatar"
+            android:layout_margin="6dp"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:layout_margin="8dp"
+            android:id="@+id/dateTextView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="88dp"
+        android:background="#cccccc" />
+</FrameLayout>
